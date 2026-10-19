@@ -1,1 +1,12 @@
-{% extends 'base.html' %}{% block content %}<section class="panel"><h1>Importación Excel</h1><p>{{ message }}</p><a href="/p/questions/" class="btn-primary">Volver al banco de preguntas →</a></section>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Importación Excel</h1>
+  <p role="{% if ok %}status{% else %}alert{% endif %}"><b>{{ message }}</b></p>
+  {% if details %}
+  <p>Corrige lo siguiente y vuelve a subir el archivo:</p>
+  <ul class="notice-list">{% for line in details %}<li>{{ line }}</li>{% endfor %}</ul>
+  {% endif %}
+  <a href="/p/questions/" class="btn-primary">Volver al banco de preguntas →</a>
+</section>
+{% endblock %}

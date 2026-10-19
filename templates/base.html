@@ -1,1 +1,69 @@
-{% load static %}<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ title }} · CICC — Centro Integral de Conocimiento de Calidad</title><link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}"><link rel="stylesheet" href="{% static 'hub.css' %}"><script defer src="{% static 'vendor/chart.umd.js' %}"></script></head><body class="theme-{{ section }}"><aside class="sidebar"><a class="brand" href="/"><span class="brand-dot">CICC</span><div>CICC — Centro Integral de Conocimiento de Calidad<small>SECCIÓN DE CONTROL DE CALIDAD</small></div></a><div class="workspace"><span class="avatar">QA</span><div>Sección de Control de Calidad<small>Mainframe & Distribuido</small></div><span class="online"></span></div><div class="nav-label">TU ESPACIO DE CONOCIMIENTO</div><nav aria-label="Menú principal" data-user="{{ user.pk }}">{% for slug,label,icon in nav %}{% if slug == 'questions' %}<div class="nav-label">GESTIÓN Y CONTROL</div>{% endif %}<a href="/p/{{ slug }}/" class="{% if section == slug %}active{% endif %}"><span>{{ icon }}</span>{{ label }}{% if slug == 'assessments' %}<b>02</b>{% endif %}</a>{% endfor %}</nav><script src="{% static 'sidebar.js' %}"></script><div class="sidebar-bottom"><div class="avatar">{{ user.username|slice:':2'|upper }}</div><div>{{ user.get_full_name|default:user.username }}<small>{{ user.groups.first.name|default:'Administrador' }}</small></div><form method="post" action="/logout/">{% csrf_token %}<button title="Cerrar sesión" class="icon-button">↪</button></form></div></aside><div class="main"><header><span>Espacio de trabajo <span class="muted">/</span> <strong>{{ title }}</strong></span><form action="/p/search/" class="global-search"><span>⌕</span><input aria-label="Buscar en el conocimiento" name="q" value="{{ query }}" placeholder="Buscar recursos, guías y conocimiento..."><kbd>↵</kbd></form><span class="header-tag">ENTORNO DEMO</span></header><main>{% block content %}{% endblock %}<footer>CICC — Centro Integral de Conocimiento de Calidad <span>•</span> Datos ficticios de demostración <span>•</span> Conocimiento que eleva la calidad.</footer></main></div>{% block scripts %}{% endblock %}</body></html>
+{% load static cicc %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title }} · CICC — Centro Integral de Conocimiento de Calidad</title>
+  <script src="{% static 'theme.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'hub.css' %}">
+</head>
+<body class="theme-{{ section }}">
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<aside class="sidebar">
+  <a class="brand" href="/">
+    <span class="brand-dot">CICC</span>
+    <div>CICC — Centro Integral de Conocimiento de Calidad<small>SECCIÓN DE CONTROL DE CALIDAD</small></div>
+  </a>
+  <div class="workspace">
+    <span class="avatar" aria-hidden="true">QA</span>
+    <div>Sección de Control de Calidad<small>Mainframe &amp; Distribuido</small></div>
+    <span class="online" aria-hidden="true"></span>
+  </div>
+  <nav aria-label="Menú principal" data-user="{{ user.pk }}">
+    {% for group in nav_groups %}
+    <section class="nav-group{% if group.active %} is-active{% endif %}" data-group="{{ group.key }}">
+      <button type="button" class="nav-label nav-toggle" aria-expanded="true" aria-controls="nav-{{ group.key }}">
+        <span>{{ group.label }}</span>{% icon 'chevron' 'chevron' %}
+      </button>
+      <div class="nav-items" id="nav-{{ group.key }}">
+        {% for slug, label, glyph in group.items %}
+        <a href="/p/{{ slug }}/" class="{% if section == slug %}active{% endif %}"{% if section == slug %} aria-current="page"{% endif %}>
+          {% icon glyph %}<span class="nav-text">{{ label }}</span>
+          {% if slug == 'assessments' and active_attempts %}<b>{{ active_attempts }} en curso</b>{% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="avatar" aria-hidden="true">{{ user.username|slice:':2'|upper }}</div>
+    <div>{{ user.get_full_name|default:user.username }}<small>{{ user|role_of }}</small><a class="side-link" href="{% url 'profile' %}">Mi perfil</a></div>
+    <form method="post" action="/logout/">{% csrf_token %}
+      <button class="icon-button" title="Cerrar sesión" aria-label="Cerrar sesión">{% icon 'logout' %}</button>
+    </form>
+  </div>
+</aside>
+<div class="main">
+  <header>
+    <span class="crumbs"><a href="/p/dashboard/">Espacio de trabajo</a> <span class="muted" aria-hidden="true">/</span> <strong>{{ title }}</strong></span>
+    <form action="/p/search/" class="global-search" role="search">
+      {% icon 'search' %}
+      <input aria-label="Buscar en el conocimiento" name="q" value="{{ query }}" placeholder="Buscar recursos, guías y conocimiento...">
+    </form>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="Cambiar a modo oscuro">{% icon 'moon' 'when-light' %}{% icon 'sun' 'when-dark' %}</button>
+    <span class="header-tag">ENTORNO DEMO</span>
+  </header>
+  <main id="contenido">
+    {% if messages %}
+    <div class="flash-list">{% for m in messages %}<div class="flash flash-{{ m.level_tag }}" role="status">{{ m }}</div>{% endfor %}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+    <footer>CICC — Centro Integral de Conocimiento de Calidad <span>•</span> Datos ficticios de demostración <span>•</span> Conocimiento que eleva la calidad.</footer>
+  </main>
+</div>
+<script src="{% static 'sidebar.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

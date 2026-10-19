@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static cicc %}
+{% block content %}
+<a href="/p/questions/" class="eyebrow">← VOLVER AL BANCO DE PREGUNTAS</a>
+<div class="page-heading"><div><h1>{{ title }}</h1><p>Escribe la pregunta y revisa cómo la verá la persona que responde.</p></div></div>
+<div class="two-col">
+  <section class="panel">
+    <form method="post" class="stack-form" id="question-form" novalidate>{% csrf_token %}
+      {% if form.errors %}<p class="error" role="alert">Revisa los campos marcados.</p>{% endif %}
+      {% for field in form %}
+      <div class="field{% if field.errors %} has-error{% endif %}" data-for="{{ field.field.widget.attrs|get_item:'data-for'|default_if_none:'' }}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for e in field.errors %}<p class="field-error" role="alert">{{ e }}</p>{% endfor %}
+      </div>
+      {% endfor %}
+      <div class="form-actions">
+        <button class="btn-primary">Guardar pregunta</button>
+        <a class="btn-secondary" href="/p/questions/">Cancelar</a>
+      </div>
+    </form>
+  </section>
+  <aside class="panel" aria-labelledby="preview-title">
+    <h2 id="preview-title">Vista previa</h2>
+    <fieldset class="question preview" id="preview">
+      <legend><small>PREGUNTA</small><span id="preview-text">—</span></legend>
+      <div id="preview-options"></div>
+    </fieldset>
+    <p class="hint">Las respuestas correctas se marcan con ✓. Quien responde no las ve hasta terminar.</p>
+    {% if question %}<p class="hint">Editar no cambia los intentos ya iniciados: cada uno conserva su copia.</p>{% endif %}
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'question_form.js' %}"></script>{% endblock %}

@@ -1,0 +1,23 @@
+{% load cicc %}
+<div class="panel">
+  <h2>Historial de evaluaciones</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Evaluación</th><th>Fecha</th><th>Duración</th><th>Puntaje</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr>
+          <td>{{ a.assessment.title }}</td>
+          <td>{{ a.started|date:'d/m/Y H:i' }}</td>
+          <td>{{ a.duration|minutes_seconds }}</td>
+          <td><span class="pill {% if a.score >= a.assessment.pass_score %}green{% else %}purple{% endif %}">{{ a.score }}% · {% if a.score >= a.assessment.pass_score %}Aprobado{% else %}Por reforzar{% endif %}</span></td>
+          <td><a href="/results/{{ a.pk }}/">Ver retroalimentación →</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Aún no has completado evaluaciones. <a href="/p/assessments/">Empieza aquí →</a></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'sections/_pagination.html' with page_obj=attempts %}
+</div>

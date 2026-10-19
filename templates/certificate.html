@@ -1,0 +1,36 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Certificado {{ certificate.code }} · CICC</title>
+  <script src="{% static 'theme.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'hub.css' %}">
+</head>
+<body class="cert-body">
+<main class="cert-wrap">
+  <div class="cert-actions no-print">
+    <span class="pill green">✓ Certificado verificado</span>
+    <button type="button" class="btn-primary" onclick="window.print()">Imprimir o guardar como PDF</button>
+    {% if is_owner %}<a class="btn-secondary" href="/p/certificates/">Mis certificados</a>{% endif %}
+  </div>
+  <article class="cert">
+    <div class="cert-brand">CICC — Centro Integral de Conocimiento de Calidad</div>
+    <p class="cert-kicker">Sección de Control de Calidad</p>
+    <h1>Certificado de aprobación</h1>
+    <p class="cert-line">Se certifica que</p>
+    <p class="cert-name">{{ holder }}</p>
+    <p class="cert-line">aprobó la evaluación</p>
+    <p class="cert-title">{{ attempt.assessment.title }}</p>
+    <p class="cert-line">con un puntaje de <strong>{{ attempt.score }}%</strong> (aprobación: {{ attempt.assessment.pass_score }}%)</p>
+    <p class="cert-line">el {{ attempt.finished_at|date:'d \d\e F \d\e Y' }}.</p>
+    <div class="cert-foot">
+      <div><small>Código de verificación</small><strong>{{ certificate.code }}</strong></div>
+      <div><small>Verifica en</small><strong>{{ request.get_host }}/certificate/{{ certificate.code }}/</strong></div>
+    </div>
+    <p class="cert-note">Evaluación formativa con datos de demostración. Esta constancia acredita la aprobación dentro de CICC; no sustituye la autorización de despliegue ni una certificación oficial.</p>
+  </article>
+</main>
+</body>
+</html>

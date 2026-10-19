@@ -1,0 +1,14 @@
+{% load cicc %}
+<div class="panel">
+  <h2>Configuración de la plataforma</h2>
+  <dl>
+    <dt>Almacenamiento</dt><dd>Local protegido · Descargas autenticadas</dd>
+    <dt>Base de datos</dt><dd>{% if db_vendor == 'sqlite' %}SQLite (solo demostración){% else %}{{ db_vendor|capfirst }}{% endif %} · PostgreSQL por defecto</dd>
+    <dt>Zona horaria</dt><dd>{{ time_zone }}</dd>
+    <dt>Modo</dt><dd>{% if debug %}Desarrollo (DEBUG activo){% else %}Producción (cookies seguras, HTTPS y HSTS){% endif %}</dd>
+    <dt>Sesiones</dt><dd>Autenticación Django · CSRF · Cookies HttpOnly · Límite de 5 intentos de acceso fallidos por 15 minutos</dd>
+    <dt>Evaluaciones</dt><dd>Temporizador del servidor · Autoguardado al cambiar una respuesta · Preguntas congeladas por intento</dd>
+  </dl>
+  <a class="btn-primary" href="/admin/hub/assessment/">Configurar evaluaciones {% icon 'link' %}</a>
+  <p>La configuración de infraestructura se realiza mediante variables de entorno. Consulta README.md.</p>
+</div>

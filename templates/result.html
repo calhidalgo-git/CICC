@@ -1,1 +1,98 @@
-{% extends 'base.html' %}{% block content %}<div class="page-heading"><div><div class="eyebrow">RESULTADOS / {{ attempt.assessment.area|upper }}</div><h1>{{ attempt.assessment.title }}</h1></div><a href="/p/assessments/" class="btn-primary">Más evaluaciones →</a></div><section class="panel"><div class="result-score">{{ attempt.score }}<small>%</small></div><h2>{% if attempt.score >= attempt.assessment.pass_score %}✓ Evaluación aprobada{% else %}Una oportunidad para seguir aprendiendo{% endif %}</h2><p>Umbral de aprobación: {{ attempt.assessment.pass_score }}%. Revisa la retroalimentación y refuerza tus conocimientos.</p>{% for q,selected,correct in rows %}<div class="review-item"><h3>{{ forloop.counter }}. {{ q.text }}</h3><p>{% if selected == q.correct %}✓ Respuesta correcta{% elif selected == None %}Sin responder{% else %}Respuesta incorrecta{% endif %}</p><p><b>Respuesta esperada:</b> {{ correct }}</p><p>{{ q.explanation }}</p></div>{% endfor %}<a href="/p/paths/">Continuar aprendiendo →</a></section>{% endblock %}
+{% extends 'base.html' %}
+{% load cicc %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">RESULTADOS / {{ attempt.assessment.area|upper }}</div>
+    <h1>{{ attempt.assessment.title }}</h1>
+  </div>
+  <a href="/p/results/" class="btn-secondary">{% icon 'arrow-left' %} Mis resultados</a>
+</div>
+
+<section class="panel">
+  <div class="result-top">
+    <div class="result-score {% if passed %}pass{% else %}fail{% endif %}">{{ attempt.score }}<small>%</small></div>
+    <div>
+      <h2>{% if passed %}{% icon 'check' %} Evaluación aprobada{% else %}Una oportunidad para seguir aprendiendo{% endif %}</h2>
+      <p>Umbral de aprobación: {{ attempt.assessment.pass_score }}%. Revisa la retroalimentación y refuerza tus conocimientos.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><small>Correctas</small><strong>{{ ok_count }}</strong></div>
+    <div class="stat"><small>Incorrectas</small><strong>{{ wrong_count }}</strong></div>
+    <div class="stat"><small>Sin responder</small><strong>{{ blank_count }}</strong></div>
+    <div class="stat"><small>Tiempo empleado</small><strong class="small-strong">{{ attempt.duration|minutes_seconds }}</strong></div>
+  </div>
+
+  {% if certificate %}
+  <div class="flash" role="status">{% icon 'award' %} ¡Obtuviste un certificado! <a href="/certificate/{{ certificate.code }}/"><b>Ver y descargar {{ certificate.code }}</b></a></div>
+  {% endif %}
+
+  {% if topic_rows %}
+  <h2>Desempeño por tema</h2>
+  <div class="topics">
+    {% for t in topic_rows %}
+    <div class="topic-row">
+      <div class="topic-head"><span>{{ t.topic }}</span><span>{{ t.ok }} de {{ t.total }} · {{ t.pct }}%</span></div>
+      <div class="progress-track" role="progressbar" aria-label="{{ t.topic }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ t.pct }}"><i style="width:{{ t.pct }}%"></i></div>
+      {% if t.pct < 100 %}<a class="text-link" href="/p/search/?q={{ t.topic|urlencode }}">Reforzar «{{ t.topic }}» →</a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="result-actions">
+    {% if can_retry %}
+    <form method="post" action="/exam/{{ attempt.assessment.pk }}/start/">{% csrf_token %}<button class="btn-primary">Reintentar evaluación {% icon 'arrow' %}</button></form>
+    {% else %}
+    <span class="pill">Alcanzaste el límite de intentos</span>
+    {% endif %}
+    <a class="btn-secondary" href="/p/paths/">Continuar aprendiendo</a>
+  </div>
+
+  {% if history|length > 1 %}
+  <h2>Tus intentos en esta evaluación</h2>
+  <div class="table-wrap">
+    <table class="history">
+      <thead><tr><th>Fecha</th><th>Puntaje</th><th>Estado</th></tr></thead>
+      <tbody>
+        {% for h in history %}
+        <tr{% if h.pk == attempt.pk %} class="current"{% endif %}>
+          <td>{{ h.started|date:'d/m/Y H:i' }}{% if h.pk == attempt.pk %} (este){% endif %}</td>
+          <td>{{ h.score }}%</td>
+          <td>{% if h.score >= attempt.assessment.pass_score %}Aprobado{% else %}Por reforzar{% endif %}{% if h.pk != attempt.pk %} · <a href="/results/{{ h.pk }}/">ver</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <h2>Revisión pregunta por pregunta</h2>
+  {% for row in rows %}
+  <div class="review-item">
+    <h3>{{ forloop.counter }}. {{ row.question.text }}</h3>
+    <p class="status-tag {{ row.status }}">
+      {% if row.status == 'ok' %}{% icon 'check' %} Respuesta correcta{% elif row.status == 'blank' %}Sin responder{% else %}{% icon 'x' %} Respuesta incorrecta{% endif %}
+    </p>
+    {% if row.kind == 'multiple' %}<p class="hint">Selección múltiple: había que marcar exactamente las opciones correctas.</p>{% endif %}
+    {% if row.kind == 'short' %}
+    <div class="opt{% if row.status == 'ok' %} correct{% elif row.status == 'wrong' %} wrong{% endif %}">
+      <span>{% if row.given %}{{ row.given }}{% else %}<em>Sin respuesta</em>{% endif %}</span><em>Tu respuesta</em>
+    </div>
+    <div class="opt correct"><span>{{ row.accepted|join:' · ' }}</span><em>Respuestas aceptadas</em></div>
+    {% endif %}
+    {% for opt in row.options %}
+    <div class="opt{% if opt.correct %} correct{% elif opt.chosen %} wrong{% endif %}">
+      <span>{{ opt.text }}</span>
+      {% if opt.correct and opt.chosen %}<em>Tu respuesta · correcta</em>
+      {% elif opt.correct %}<em>Respuesta esperada</em>
+      {% elif opt.chosen %}<em>Tu respuesta</em>{% endif %}
+    </div>
+    {% endfor %}
+    <p>{{ row.question.explanation }}</p>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% load cicc %}
+<div class="panel">
+  <div class="section-heading"><h2>Equipo de calidad ({{ users.paginator.count }})</h2><a href="/admin/auth/user/">Crear y editar usuarios {% icon 'link' %}</a></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th></tr></thead>
+      <tbody>
+        {% for u in users %}<tr><td>{{ u.get_full_name }}</td><td>{{ u.username }}</td><td>{{ u|role_of }}</td><td>{% if u.is_active %}<span class="pill green">Activo</span>{% else %}Inactivo{% endif %}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'sections/_pagination.html' with page_obj=users %}
+</div>

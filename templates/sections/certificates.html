@@ -1,0 +1,15 @@
+{% load cicc %}
+<div class="cards">
+  {% for c in certificates %}
+  <article class="panel">
+    <span class="course-icon green">{% icon 'award' %}</span>
+    <span class="pill green">{{ c.attempt.assessment.area }}</span>
+    <h2>{{ c.attempt.assessment.title }}</h2>
+    <p>Puntaje {{ c.attempt.score }}% · Emitido el {{ c.issued|date:'d/m/Y' }}<br><small>Código {{ c.code }}</small></p>
+    <a class="btn-primary" href="/certificate/{{ c.code }}/">Ver y descargar {% icon 'arrow' %}</a>
+  </article>
+  {% empty %}
+  <div class="empty">{% icon 'award' %}<h3>Todavía no tienes certificados</h3><p>Se emiten automáticamente al aprobar una evaluación.</p><a class="btn-primary" href="/p/assessments/">Ir a evaluaciones {% icon 'arrow' %}</a></div>
+  {% endfor %}
+</div>
+{% include 'sections/_pagination.html' with page_obj=certificates %}

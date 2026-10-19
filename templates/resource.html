@@ -1,1 +1,58 @@
-{% extends 'base.html' %}{% block content %}<a href="/p/library/" class="eyebrow">← VOLVER A LA BIBLIOTECA</a><div class="page-heading"><div><h1>{{ resource.title }}</h1><span class="pill green">{{ resource.area }} · {{ resource.display_kind }}</span></div></div><div class="two-col"><article class="panel"><h2>Acerca de este recurso</h2><p>{{ resource.description|linebreaksbr }}</p>{% if resource.kind == 'Video' %}<div class="resource-art art-blue"><span>▷</span></div><p>Video de demostración: abre el material público de referencia. No se incluye un video local.</p>{% endif %}{% if resource.url %}<a class="btn-primary" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">Abrir fuente externa ↗</a>{% endif %}</article><aside class="panel"><h2>Historial de versiones</h2>{% for v in resource.versions.all %}<div class="review-item"><span class="pill green">Versión {{ v.number }}.0</span><p>{{ v.notes }}</p><small>{{ v.created|date:'d/m/Y' }}</small>{% if v.file %}<p><a href="/download/{{ v.pk }}/">↓ Descargar archivo protegido</a></p>{% endif %}</div>{% endfor %}{% if perms.hub.change_resource %}<a href="/admin/hub/resource/{{ resource.pk }}/change/">Editar recurso ↗</a>{% endif %}</aside></div>{% endblock %}
+{% extends 'base.html' %}
+{% load cicc %}
+{% block content %}
+<a href="/p/library/" class="eyebrow">← VOLVER A LA BIBLIOTECA</a>
+<div class="page-heading">
+  <div>
+    <h1>{{ resource.title }}</h1>
+    <span class="pill green">{{ resource.area }} · {{ resource.display_kind }}</span>
+  </div>
+  <form method="post" action="/favorite/{{ resource.pk }}/">{% csrf_token %}
+    <button class="fav-inline{% if is_favorite %} on{% endif %}" aria-pressed="{% if is_favorite %}true{% else %}false{% endif %}">{% icon 'star' %} {% if is_favorite %}En favoritos{% else %}Guardar en favoritos{% endif %}</button>
+  </form>
+</div>
+<div class="two-col">
+  <article class="panel">
+    <h2>Acerca de este recurso</h2>
+    <p>{{ resource.description|linebreaksbr }}</p>
+    {% if resource.tag_list %}<p class="tag-line">{% for t in resource.tag_list %}<a class="tag" href="/p/library/?etiqueta={{ t|urlencode }}">#{{ t }}</a>{% endfor %}</p>{% endif %}
+    {% if player %}
+    <video class="player" controls preload="metadata" src="{% url 'stream' player.pk %}">Tu navegador no puede reproducir este video. <a href="/download/{{ player.pk }}/">Descárgalo</a>.</video>
+    <p class="hint">Reproduciendo la versión {{ player.number }}. Puedes adelantar y retroceder.</p>
+    {% elif resource.kind == 'Video' %}
+    <div class="resource-art art-blue"><span>{% icon 'play' %}</span></div>
+    <p>Video de referencia: abre el material público. Los editores pueden adjuntar un archivo .mp4, .webm u .ogg a una versión para reproducirlo aquí.</p>
+    {% endif %}
+    {% if resource.url %}<a class="btn-primary" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">Abrir fuente externa {% icon 'link' %}</a>{% endif %}
+    {% if related %}
+    <h2 style="margin-top:28px">Ver también</h2>
+    {% for r in related %}
+    <a class="resource-row" href="/resource/{{ r.pk }}/">{% icon 'file' 'file-icon' %}<div><h3>{{ r.display_title }}</h3><small>{{ r.area }} <span>•</span> {{ r.display_kind }}</small></div>{% icon 'arrow' %}</a>
+    {% endfor %}
+    {% endif %}
+  </article>
+  <aside class="panel">
+    <h2>Historial de versiones</h2>
+    {% for v in versions %}
+    <div class="review-item">
+      <span class="pill green">Versión {{ v.number }}.0</span>
+      <p>{{ v.notes }}</p>
+      <small>{{ v.created|date:'d/m/Y' }}</small>
+      {% if v.file %}<p><a href="/download/{{ v.pk }}/">{% icon 'download' %} Descargar archivo protegido</a></p>{% endif %}
+    </div>
+    {% empty %}
+    <p>Este recurso aún no tiene versiones publicadas.</p>
+    {% endfor %}
+    {% if upload_form %}
+    <h3 style="margin-top:22px">Subir una versión nueva</h3>
+    <form method="post" action="{% url 'upload_version' resource.pk %}" enctype="multipart/form-data" class="stack-form">{% csrf_token %}
+      <label for="id_file">{{ upload_form.file.label }}</label>{{ upload_form.file }}
+      <small>Documentos, imágenes o video (.mp4, .webm, .ogg), hasta 200 MB.</small>
+      <label for="id_notes">{{ upload_form.notes.label }}</label>{{ upload_form.notes }}
+      <div class="form-actions"><button class="btn-primary">{% icon 'upload' %} Publicar versión</button></div>
+    </form>
+    {% endif %}
+    {% if perms.hub.change_resource %}<p><a href="/admin/hub/resource/{{ resource.pk }}/change/">Editar recurso {% icon 'link' %}</a></p>{% endif %}
+  </aside>
+</div>
+{% endblock %}

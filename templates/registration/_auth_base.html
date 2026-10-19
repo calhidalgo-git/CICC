@@ -1,0 +1,21 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Cuenta{% endblock %} · CICC — Centro Integral de Conocimiento de Calidad</title>
+  <script src="{% static 'theme.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'hub.css' %}">
+</head>
+<body class="login-body">
+<section class="login-intro">
+  <div class="brand"><span class="brand-dot">CICC</span><div>CICC — Centro Integral de Conocimiento de Calidad<small>SECCIÓN DE CONTROL DE CALIDAD</small></div></div>
+  <h1>Tu cuenta,<br>siempre a la mano.</h1>
+  <p>Recupera el acceso o actualiza tu contraseña de forma segura.</p>
+</section>
+<main class="login-form">
+  {% block body %}{% endblock %}
+  <p style="margin-top:22px"><a class="text-link" href="/login/">← Volver al acceso</a></p>
+</main>
+</body>
+</html>

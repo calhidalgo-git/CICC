@@ -1,0 +1,22 @@
+{% load cicc %}
+<div class="panel">
+  <span class="pill teal">CONTINUIDAD OPERATIVA</span>
+  <h2>Respaldo del contenido</h2>
+  <p>Exporta recursos, versiones, rutas, lecciones y comprobaciones, evaluaciones, preguntas, progreso, favoritos, intentos, certificados, semanas editadas, auditoría, grupos y usuarios en JSON.</p>
+  <form method="post" action="/backup/">{% csrf_token %}<button class="btn-primary">{% icon 'download' %} Crear respaldo de contenido</button></form>
+  <p>El archivo no incluye contraseñas ni archivos adjuntos. También se restaura por línea de comandos con <code>python manage.py loaddata cicc-content-backup.json</code>. Para un respaldo completo usa pg_dump y copia private_storage; ver ARQUITECTURA.md.</p>
+</div>
+
+{% if user.is_superuser %}
+<div class="panel">
+  <span class="pill purple">SOLO SUPERUSUARIOS</span>
+  <h2>Restaurar un respaldo</h2>
+  <p>Carga un archivo creado con «Crear respaldo de contenido». <b>Los objetos con el mismo ID se sobrescriben</b> con lo que trae el archivo; los usuarios que ya existen se conservan sin cambios y los nuevos quedan sin contraseña (usa <code>manage.py changepassword</code> o la recuperación por correo). Todo se aplica en una sola transacción: si algo falla, no se cambia nada.</p>
+  <form method="post" action="/restore/" enctype="multipart/form-data" class="stack-form">{% csrf_token %}
+    <label for="restore-file">Archivo de respaldo (.json, máximo 50 MB)</label>
+    <input id="restore-file" type="file" name="file" accept=".json,application/json" required>
+    <label class="check-line"><input type="checkbox" name="confirmar" value="1" required> Entiendo que se sobrescribirán objetos con el mismo ID.</label>
+    <div class="form-actions"><button class="btn-primary">{% icon 'upload' %} Restaurar respaldo</button></div>
+  </form>
+</div>
+{% endif %}

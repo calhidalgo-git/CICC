@@ -1,0 +1,105 @@
+{% load cicc %}
+<div class="stats">
+  <div class="stat"><small>Recursos publicados</small><strong>{{ resource_count }}</strong></div>
+  <div class="stat"><small>Evaluaciones</small><strong>{{ assessment_count }}</strong></div>
+  <div class="stat"><small>Profesionales registrados</small><strong>{{ user_count }}</strong></div>
+  <div class="stat"><small>Intentos finalizados{% if filters.usuario or filters.evaluacion or filters.desde or filters.hasta %} (filtrados){% endif %}</small><strong>{{ summary.total }}</strong>
+    <span class="trend">{% if summary.total %}Promedio {{ summary.average|floatformat:1 }}% · Aprobación {{ pass_rate }}%{% else %}Sin datos todavía{% endif %}</span></div>
+</div>
+
+<div class="panel">
+  <div class="section-heading"><h2>Resultados por intento</h2><a href="/report.xlsx{% if export_query %}?{{ export_query }}{% endif %}">{% icon 'download' %} Exportar a Excel</a></div>
+  <form class="filter-bar" method="get">
+    <label>Usuario
+      <select name="usuario"><option value="">Todos</option>{% for u in filter_users %}<option value="{{ u.pk }}"{% if filters.usuario == u.pk|stringformat:"s" %} selected{% endif %}>{{ u.username }}</option>{% endfor %}</select>
+    </label>
+    <label>Evaluación
+      <select name="evaluacion"><option value="">Todas</option>{% for a in filter_assessments %}<option value="{{ a.pk }}"{% if filters.evaluacion == a.pk|stringformat:"s" %} selected{% endif %}>{{ a.title }}</option>{% endfor %}</select>
+    </label>
+    <label>Desde<input type="date" name="desde" value="{{ filters.desde }}"></label>
+    <label>Hasta<input type="date" name="hasta" value="{{ filters.hasta }}"></label>
+    <button class="btn-primary">Filtrar</button>
+    <a href="?">Limpiar</a>
+  </form>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Usuario</th><th>Evaluación</th><th>Fecha</th><th>Duración</th><th>Puntaje</th><th>Estado</th></tr></thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr>
+          <td>{{ a.user.username }}</td><td>{{ a.assessment.title }}</td><td>{{ a.started|date:'d/m/Y H:i' }}</td><td>{{ a.duration|minutes_seconds }}</td>
+          <td>{{ a.score }}%</td>
+          <td><span class="pill {% if a.score >= a.assessment.pass_score %}green{% else %}purple{% endif %}">{% if a.score >= a.assessment.pass_score %}Aprobado{% else %}Por reforzar{% endif %}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No hay intentos finalizados con estos filtros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'sections/_pagination.html' with page_obj=attempts %}
+</div>
+
+<div class="two-col">
+  <div class="panel">
+    <h2>Aprobación por evaluación</h2>
+    <canvas id="passChart" height="200" role="img" aria-label="Porcentaje de aprobación por evaluación"></canvas>
+    <div class="table-wrap">
+      <table class="history">
+        <caption class="sr-only">Aprobación por evaluación</caption>
+        <thead><tr><th>Evaluación</th><th>Intentos</th><th>Promedio</th><th>Aprobación</th></tr></thead>
+        <tbody>
+          {% for r in assessment_rows %}<tr><td>{{ r.title }}</td><td>{{ r.attempts }}</td><td>{{ r.average }}%</td><td>{{ r.pass_rate }}%</td></tr>
+          {% empty %}<tr><td colspan="4">Sin intentos con estos filtros.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Evolución de los últimos 30 días</h2>
+    <canvas id="trendChart" height="200" role="img" aria-label="Intentos y puntaje promedio por día"></canvas>
+    <div class="table-wrap">
+      <table class="history">
+        <caption class="sr-only">Intentos y promedio por día</caption>
+        <thead><tr><th>Día</th><th>Intentos</th><th>Promedio</th></tr></thead>
+        <tbody>
+          {% for t in trend %}<tr><td>{{ t.day }}</td><td>{{ t.attempts }}</td><td>{{ t.average }}%</td></tr>
+          {% empty %}<tr><td colspan="3">Sin intentos en los últimos 30 días.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Preguntas que más se fallan</h2>
+  <p class="hint">Calculado sobre los 500 intentos más recientes que cumplen los filtros, con las preguntas tal como las vio cada persona.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Pregunta</th><th>Evaluación</th><th>Veces</th><th>Aciertos</th></tr></thead>
+      <tbody>
+        {% for q in hardest %}<tr><td>{{ q.text }}</td><td>{{ q.assessment }}</td><td>{{ q.answered }}</td><td>{{ q.pct }}%</td></tr>
+        {% empty %}<tr><td colspan="4">Aún no hay datos.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="panel">
+    <h2>Recursos por especialidad</h2>
+    <canvas id="areaChart" height="180" role="img" aria-label="Recursos publicados: Mainframe {{ chart_data.0 }}, Distribuido {{ chart_data.1 }}"></canvas>
+    <table class="history">
+      <caption class="sr-only">Datos del gráfico</caption>
+      <thead><tr><th>Área</th><th>Recursos</th></tr></thead>
+      <tbody><tr><td>Mainframe</td><td>{{ chart_data.0 }}</td></tr><tr><td>Distribuido</td><td>{{ chart_data.1 }}</td></tr></tbody>
+    </table>
+    <p class="muted">Distribución del catálogo de demostración.</p>
+  </div>
+  <div class="panel">
+    <span class="pill teal">ANALÍTICA QA</span>
+    <h2>Del conocimiento a la decisión.</h2>
+    <p>Exporta los intentos finalizados con su puntaje, área y estado de aprobación. El archivo respeta los filtros aplicados.</p>
+    <a class="btn-primary" href="/report.xlsx{% if export_query %}?{{ export_query }}{% endif %}">{% icon 'download' %} Exportar reporte Excel</a>
+  </div>
+</div>

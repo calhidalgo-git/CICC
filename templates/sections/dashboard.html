@@ -1,0 +1,100 @@
+{% load cicc %}
+<section class="hero">
+  <div>
+    <span class="pill light">TU PRÓXIMO PASO</span>
+    {% if active_attempt %}
+    <h2>Tienes una evaluación<br>en curso.</h2>
+    <p>«{{ active_attempt.assessment.title }}» sigue abierta. Retómala antes de que se agote el tiempo.</p>
+    <a class="btn-primary" href="/attempt/{{ active_attempt.pk }}/">Reanudar evaluación {% icon 'arrow' %}</a>
+    {% elif next_row %}
+    <h2>Continúa tu ruta:<br>{{ next_row.path.title }}</h2>
+    <p>Siguiente lección: {{ next_row.next.title }}.</p>
+    <a class="btn-primary" href="/p/lessons/#lesson-{{ next_row.next.pk }}">Continuar aprendiendo {% icon 'arrow' %}</a>
+    <span class="hero-meta">{{ pending_lessons }} lecciones pendientes · A tu ritmo</span>
+    {% elif lesson_count %}
+    <h2>Completaste todas<br>tus lecciones.</h2>
+    <p>Pon a prueba lo aprendido con una evaluación.</p>
+    <a class="btn-primary" href="/p/assessments/">Ir a evaluaciones {% icon 'arrow' %}</a>
+    {% else %}
+    <h2>La calidad comienza<br>con lo que aprendes.</h2>
+    <p>Explora la biblioteca y encuentra tu primer recurso.</p>
+    <a class="btn-primary" href="/p/library/">Explorar biblioteca {% icon 'arrow' %}</a>
+    {% endif %}
+  </div>
+  <div class="orbital" aria-hidden="true">
+    <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+    <div class="core">CICC<span>CALIDAD</span></div>
+    <div class="float-tag tag1">{% icon 'check' %} &nbsp;Calidad continua</div>
+    <div class="float-tag tag2">{% icon 'path' %} &nbsp;Aprende haciendo</div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><span class="stat-icon green">{% icon 'library' %}</span><small>Recursos disponibles</small><strong>{{ resource_count|stringformat:'02d' }}</strong><span class="trend">Biblioteca curada</span></div>
+  <div class="stat"><span class="stat-icon blue">{% icon 'lesson' %}</span><small>Lecciones completadas</small><strong>{{ progress_count|stringformat:'02d' }}<span class="of"> / {{ lesson_count }}</span></strong><span class="trend">Tu progreso personal</span></div>
+  <div class="stat"><span class="stat-icon purple">{% icon 'assessment' %}</span><small>Evaluaciones disponibles</small><strong>{{ assessment_count|stringformat:'02d' }}</strong><span class="trend">Valida tus habilidades</span></div>
+  <div class="stat"><span class="stat-icon teal">{% icon 'reports' %}</span><small>Áreas de especialización</small><strong>{{ area_count|stringformat:'02d' }}</strong><span class="trend">Mainframe + Distribuido</span></div>
+</div>
+
+<div class="two-col">
+  <section>
+    <div class="section-heading"><h2>Recién llegados a la biblioteca</h2><a href="/p/library/">Explorar biblioteca {% icon 'arrow' %}</a></div>
+    {% for r in latest_resources %}
+    <a class="learning-row" href="/resource/{{ r.pk }}/">
+      <span class="course-icon {% if r.area == 'Mainframe' %}blue{% else %}green{% endif %}">{% icon 'file' %}</span>
+      <div><span class="tiny-label">{{ r.area|upper }} · {{ r.display_kind|upper }}</span><h3>{{ r.display_title }}</h3><small>Disponible en la biblioteca</small></div>
+      {% icon 'arrow' %}
+    </a>
+    {% empty %}
+    <div class="empty"><h3>Aún no hay recursos publicados</h3><p>Cuando se publiquen aparecerán aquí.</p></div>
+    {% endfor %}
+
+    {% if recent_resources %}
+    <div class="section-heading spaced"><h2>Vistos recientemente</h2><a href="/p/favorites/">Mis favoritos {% icon 'arrow' %}</a></div>
+    {% for r in recent_resources %}
+    <a class="resource-row" href="/resource/{{ r.pk }}/">{% icon 'file' 'file-icon' %}<div><h3>{{ r.display_title }}</h3><small>{{ r.area }} <span>•</span> {{ r.display_kind }}</small></div>{% icon 'arrow' %}</a>
+    {% endfor %}
+    {% endif %}
+
+    <div class="section-heading spaced"><h2>Continúa tu aprendizaje</h2><a href="/p/paths/">Ver todas las rutas {% icon 'arrow' %}</a></div>
+    {% for row in path_rows %}
+    <a href="/p/lessons/" class="resource-row path-row">
+      {% icon 'path' 'file-icon' %}
+      <div>
+        <h3>{{ row.path.title }}</h3>
+        <small>{{ row.path.area }} <span>•</span> {{ row.done }} de {{ row.total }} lecciones</small>
+        <div class="progress-track" role="progressbar" aria-label="Progreso de {{ row.path.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ row.pct }}"><i style="width:{{ row.pct }}%"></i></div>
+      </div>
+      <span class="pill {% if row.pct == 100 %}green{% endif %}">{{ row.pct }}%</span>
+    </a>
+    {% endfor %}
+    {% for row in course_rows %}
+    <a href="{{ row.url }}" class="resource-row path-row">
+      {% icon 'lesson' 'file-icon' %}
+      <div>
+        <h3>{{ row.name }}</h3>
+        <small>Curso semanal <span>•</span> {{ row.done }} de {{ row.total }} semanas</small>
+        <div class="progress-track" role="progressbar" aria-label="Progreso de {{ row.name }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ row.pct }}"><i style="width:{{ row.pct }}%"></i></div>
+      </div>
+      <span class="pill {% if row.pct == 100 %}green{% endif %}">{{ row.pct }}%</span>
+    </a>
+    {% endfor %}
+  </section>
+
+  <aside class="insight">
+    <div class="section-heading"><h2>Tu próximo desafío</h2></div>
+    {% if recommended %}
+    <span class="pill purple">{% if active_attempt %}EVALUACIÓN EN CURSO{% else %}EVALUACIÓN RECOMENDADA{% endif %}</span>
+    <h2>{{ recommended.title }}</h2>
+    <div class="challenge-facts"><span>{% icon 'clock' %} {{ recommended.minutes }} minutos</span><span>{% icon 'assessment' %} {{ recommended.question_count }} preguntas</span></div>
+    {% if active_attempt %}
+    <a class="btn-primary full" href="/attempt/{{ active_attempt.pk }}/">Reanudar evaluación {% icon 'arrow' %}</a>
+    {% else %}
+    <a class="btn-primary full" href="/p/assessments/">Explorar evaluaciones {% icon 'arrow' %}</a>
+    {% endif %}
+    {% else %}
+    <p>Todavía no hay evaluaciones disponibles.</p>
+    {% endif %}
+    <div class="tip"><p><b>Un poco cada día, un gran avance.</b><br>Combina teoría y práctica para afianzar tus habilidades.</p></div>
+  </aside>
+</div>

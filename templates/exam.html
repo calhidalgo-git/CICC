@@ -1,9 +1,83 @@
-{% extends 'base.html' %}{% block content %}<div class="exam-top"><div><span class="eyebrow">EVALUACIÓN EN CURSO / {{ attempt.assessment.area|upper }}</span><h1>{{ attempt.assessment.title }}</h1><p id="save-status" role="status">Recuperando respuestas guardadas…</p></div><div><small>TIEMPO RESTANTE</small><div class="timer" id="timer">--:--</div></div></div><p>Selecciona una respuesta por pregunta. Se guarda al cambiar y cada 10 segundos. Puedes recargar la página.</p><form id="answers">{% csrf_token %}{% for q in exam_questions %}<section class="question"><small>PREGUNTA {{ forloop.counter }} DE {{ exam_questions|length }}</small><h2>{{ q.text }}</h2>{% for option in q.options %}<label class="option"><input type="radio" name="{{ q.pk }}" value="{{ forloop.counter0 }}">{{ option }}</label>{% endfor %}</section>{% endfor %}</form><form id="finish" method="post" action="/attempt/{{ attempt.pk }}/finish/">{% csrf_token %}<button class="btn-primary" id="finish-button">Finalizar evaluación →</button></form>{{ attempt.answers|json_script:'saved-answers' }}{% endblock %}{% block scripts %}<script>
-const answersForm=document.getElementById('answers'),finishForm=document.getElementById('finish'),statusEl=document.getElementById('save-status'),deadline=new Date('{{ deadline|escapejs }}').getTime();
-const saved=JSON.parse(document.getElementById('saved-answers').textContent);for(const [key,value] of Object.entries(saved)){const input=answersForm.querySelector(`input[name="${key}"][value="${value}"]`);if(input)input.checked=true;}statusEl.textContent='✓ Respuestas recuperadas · Autoguardado activado';
-let chain=Promise.resolve(),expired=false;
-function save(){const snapshot={};for(const [k,v] of new FormData(answersForm)){if(k!=='csrfmiddlewaretoken')snapshot[k]=Number(v);}chain=chain.catch(()=>{}).then(async()=>{statusEl.textContent='Guardando…';const response=await fetch('/attempt/{{ attempt.pk }}/save/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':answersForm.querySelector('[name=csrfmiddlewaretoken]').value},body:JSON.stringify(snapshot)});if(!response.ok){const payload=await response.json();if(payload.expired){expired=true;location.href='/results/{{ attempt.pk }}/';return;}throw Error('No guardado');}statusEl.textContent='✓ Guardado en el servidor · '+new Date().toLocaleTimeString('es-PE');});return chain;}
-answersForm.addEventListener('change',()=>save().catch(()=>statusEl.textContent='Sin conexión. Mantén esta página abierta; reintentaremos.'));setInterval(()=>save().catch(()=>statusEl.textContent='No se pudo guardar. Revisa tu conexión.'),10000);
-finishForm.addEventListener('submit',async e=>{e.preventDefault();if(!confirm('¿Finalizar y enviar tu evaluación?'))return;document.getElementById('finish-button').disabled=true;try{await save();if(!expired)finishForm.submit();}catch{document.getElementById('finish-button').disabled=false;statusEl.textContent='No se envió: guarda tus respuestas al recuperar la conexión.';}});
-function tick(){const seconds=Math.max(0,Math.ceil((deadline-Date.now())/1000));document.getElementById('timer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');if(!seconds&&!expired){expired=true;finishForm.submit();}}tick();setInterval(tick,1000);
-</script>{% endblock %}
+{% extends 'base.html' %}
+{% load static cicc %}
+{% block content %}
+<div id="exam-root"
+     data-attempt="{{ attempt.pk }}"
+     data-total="{{ exam_questions|length }}"
+     data-save-url="/attempt/{{ attempt.pk }}/save/"
+     data-results-url="/results/{{ attempt.pk }}/"
+     data-deadline="{{ deadline }}"
+     data-server-now="{{ server_now }}">
+
+  <div id="time-alert" class="exam-alert" hidden></div>
+  <div id="time-live" class="sr-only" role="status" aria-live="polite"></div>
+
+  <div class="exam-top">
+    <div>
+      <span class="eyebrow">EVALUACIÓN EN CURSO / {{ attempt.assessment.area|upper }}</span>
+      <h1>{{ attempt.assessment.title }}</h1>
+      <p id="save-status" role="status">Recuperando respuestas guardadas…</p>
+    </div>
+    <div>
+      <small>TIEMPO RESTANTE</small>
+      <div class="timer" id="timer" role="timer" aria-label="Tiempo restante">--:--</div>
+    </div>
+  </div>
+  <p>Selecciona una respuesta por pregunta. Se guarda al cambiar y puedes recargar la página sin perder tu avance. Usa «Marcar para revisar» para volver luego a las dudas.</p>
+
+  <div class="exam-layout">
+    <div>
+      <form id="answers" data-assessment="{{ attempt.assessment.pk }}">{% csrf_token %}
+        {% for q in exam_questions %}
+        <fieldset class="question" id="q-{{ q.id }}" data-id="{{ q.id }}" data-kind="{{ q.kind }}">
+          <legend><small>PREGUNTA {{ forloop.counter }} DE {{ exam_questions|length }}{% if q.kind == 'multiple' %} · SELECCIÓN MÚLTIPLE{% elif q.kind == 'truefalse' %} · VERDADERO O FALSO{% elif q.kind == 'short' %} · RESPUESTA CORTA{% endif %}</small>{{ q.text }}</legend>
+          <button type="button" class="flag-btn" data-id="{{ q.id }}" aria-pressed="false">{% icon 'flag' %} Marcar para revisar</button>
+          {% if q.kind == 'short' %}
+          <label class="short-answer"><span class="sr-only">Tu respuesta</span><input type="text" name="{{ q.id }}" maxlength="200" autocomplete="off" placeholder="Escribe tu respuesta"></label>
+          {% elif q.kind == 'multiple' %}
+          <p class="hint">Marca todas las opciones que correspondan.</p>
+          {% for option in q.options %}
+          <label class="option"><input type="checkbox" name="{{ q.id }}" value="{{ forloop.counter0 }}">{{ option }}</label>
+          {% endfor %}
+          {% else %}
+          {% for option in q.options %}
+          <label class="option"><input type="radio" name="{{ q.id }}" value="{{ forloop.counter0 }}">{{ option }}</label>
+          {% endfor %}
+          {% endif %}
+        </fieldset>
+        {% endfor %}
+      </form>
+      <form id="finish" method="post" action="/attempt/{{ attempt.pk }}/finish/">{% csrf_token %}
+        <div class="exam-actions">
+          <button type="button" class="btn-primary" id="finish-button">Finalizar evaluación {% icon 'arrow' %}</button>
+          <span class="hint">Podrás revisar un resumen antes de enviar.</span>
+        </div>
+      </form>
+    </div>
+
+    <aside class="exam-map" aria-label="Avance de la evaluación">
+      <h2>Tu avance</h2>
+      <p>Contestadas: <strong id="answered-count">0 de {{ exam_questions|length }}</strong></p>
+      <div class="meter" role="progressbar" aria-label="Preguntas contestadas" aria-valuemin="0" aria-valuemax="{{ exam_questions|length }}" aria-valuenow="0"><i id="meter"></i></div>
+      <div class="map-grid">
+        {% for q in exam_questions %}<a class="map-btn" href="#q-{{ q.id }}" data-id="{{ q.id }}" aria-label="Ir a la pregunta {{ forloop.counter }}">{{ forloop.counter }}</a>{% endfor %}
+      </div>
+      <div class="legend"><span><i class="l-ans"></i>Contestada</span><span><i class="l-flag"></i>Para revisar</span></div>
+    </aside>
+  </div>
+
+  <dialog class="modal" id="finish-dialog" aria-labelledby="dialog-title">
+    <div class="modal-body">
+      <h2 id="dialog-title">¿Enviar tu evaluación?</h2>
+      <p id="dialog-summary"></p>
+      <p>Una vez enviada no podrás cambiar tus respuestas.</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="cancel-finish">Seguir revisando</button>
+      <button type="button" class="btn-primary" id="confirm-finish">Enviar evaluación</button>
+    </div>
+  </dialog>
+</div>
+{{ attempt.answers|json_script:'saved-answers' }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'exam.js' %}"></script>{% endblock %}

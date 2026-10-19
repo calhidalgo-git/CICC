@@ -1,0 +1,43 @@
+{% load cicc %}
+{% for row in path_rows %}
+<section class="lesson-group" aria-labelledby="path-{{ row.path.pk }}">
+  <div class="section-heading">
+    <h2 id="path-{{ row.path.pk }}">{{ row.path.title }}</h2>
+    <span>{{ row.done }} de {{ row.total }} completadas · {{ row.pct }}%</span>
+  </div>
+  <div class="progress-track" role="progressbar" aria-label="Progreso de {{ row.path.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ row.pct }}"><i style="width:{{ row.pct }}%"></i></div>
+  <div style="height:18px"></div>
+  {% for lesson in row.lessons %}
+  <article class="panel lesson{% if lesson.pk in done %} done{% endif %}" id="lesson-{{ lesson.pk }}">
+    <span class="eyebrow">{{ row.path.title }} / LECCIÓN {{ lesson.position }}</span>
+    <h3 class="lesson-title">{{ lesson.title }}</h3>
+    <p class="lesson-body">{{ lesson.body|linebreaksbr }}</p>
+    {% if lesson.pk in done %}
+    <span class="pill green">{% icon 'check' %} Lección completada</span>
+    {% else %}
+    <form method="post" action="/lesson/{{ lesson.pk }}/complete/">{% csrf_token %}
+      {% if lesson.checks.all %}
+      <div class="lesson-checks">
+        <h4>Comprueba lo aprendido</h4>
+        <p class="hint">Responde bien todas las preguntas para completar la lección.</p>
+        {% for check in lesson.checks.all %}
+        <fieldset class="check">
+          <legend>{{ check.text }}</legend>
+          {% for option in check.options %}
+          <label class="check-option"><input type="radio" name="check-{{ check.pk }}" value="{{ forloop.counter0 }}" required>{{ option }}</label>
+          {% endfor %}
+        </fieldset>
+        {% endfor %}
+      </div>
+      <button class="btn-primary">Comprobar y completar {% icon 'check' %}</button>
+      {% else %}
+      <button class="btn-primary">Marcar como completada {% icon 'check' %}</button>
+      {% endif %}
+    </form>
+    {% endif %}
+  </article>
+  {% endfor %}
+</section>
+{% empty %}
+<div class="empty">{% icon 'lesson' %}<h3>No hay lecciones todavía</h3><p>Cuando se publiquen rutas con lecciones podrás seguir tu avance aquí.</p></div>
+{% endfor %}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cicc %}
 {% block content %}
 <a href="/p/dashboard/" class="eyebrow">← VOLVER A VISTA GENERAL</a>
 <div class="page-heading"><div><h1>Fundamentos QA</h1><p>Una ruta progresiva para iniciarte en el aseguramiento de la calidad.</p></div></div>
@@ -14,8 +15,8 @@
     <li>Consolidar conocimientos en un proyecto final aplicado.</li>
   </ul>
 </article>
-<div class="section-heading"><h2>Ruta de aprendizaje</h2><span>6 semanas</span></div>
-{% for title in weeks %}
-<a class="learning-row" href="{% url 'qa_week' forloop.counter %}"><span class="course-icon blue">▤</span><div><span class="tiny-label">FUNDAMENTOS QA</span><h3>{{ title }}</h3><small>Abrir tema</small></div><span>→</span></a>
+<div class="section-heading"><h2>Ruta de aprendizaje</h2><span>{{ done_count }} de 6 semanas completadas</span></div>
+{% for row in week_rows %}
+<a class="learning-row" href="{% url 'qa_week' row.number %}"><span class="course-icon blue">{% icon 'file' %}</span><div><span class="tiny-label">FUNDAMENTOS QA</span><h3>{{ row.title }}</h3><small>{% if row.done %}Semana completada{% else %}Abrir tema{% endif %}</small></div>{% if row.done %}<span class="pill green">{% icon 'check' %} Completada</span>{% endif %}{% icon 'arrow' %}</a>
 {% endfor %}
 {% endblock %}

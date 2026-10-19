@@ -1,0 +1,29 @@
+{% load cicc %}
+<section class="assessment-banner">
+  <span class="pill purple">CENTRO DE EVALUACIONES</span>
+  <h2>Haz visible tu conocimiento.</h2>
+  <p>Evalúa tus habilidades con escenarios reales de trabajo. Tus respuestas se guardan automáticamente y el orden de las preguntas cambia en cada intento.</p>
+</section>
+<div class="cards">
+  {% for card in cards %}
+  <article class="panel exam-card">
+    <span class="pill purple">{{ card.assessment.area }}</span>
+    {% if card.passed %}<span class="pill green">{% icon 'check' %} Aprobada · mejor {{ card.best }}%</span>
+    {% elif card.best != None %}<span class="pill">Mejor puntaje: {{ card.best }}%</span>{% endif %}
+    <div class="exam-symbol">{% icon 'assessment' %}</div>
+    <h2>{{ card.assessment.title }}</h2>
+    <p>
+      {{ card.assessment.question_count }} pregunta{{ card.assessment.question_count|pluralize }} · {{ card.assessment.minutes }} minutos<br>
+      Aprobación: {{ card.assessment.pass_score }}% · Selección única<br>
+      {% if card.assessment.max_attempts %}Intentos: {{ card.attempts_used }} de {{ card.assessment.max_attempts }}{% else %}Intentos ilimitados{% endif %}
+    </p>
+    {% if card.can_start %}
+    <form method="post" action="/exam/{{ card.assessment.pk }}/start/">{% csrf_token %}<button class="btn-primary full">{{ card.label }} {% icon 'arrow' %}</button></form>
+    {% else %}
+    <p><b>{{ card.blocked_reason }}.</b></p>
+    {% endif %}
+  </article>
+  {% empty %}
+  <div class="empty">{% icon 'assessment' %}<h3>No hay evaluaciones disponibles</h3><p>Tu equipo de evaluación las publicará pronto.</p></div>
+  {% endfor %}
+</div>

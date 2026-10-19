@@ -1,0 +1,197 @@
+{
+  "modules": {
+    "knowledge": "Conocimiento del área",
+    "environment": "Ambiente de certificación",
+    "mainframe": "Mainframe",
+    "distributed": "Distribuido",
+    "lifecycle": "Ciclo de vida y pruebas",
+    "tools": "Herramientas QA / ClearQuest",
+    "procedures": "Procedimientos de certificación",
+    "incidents": "Incidentes y soluciones",
+    "glossary": "Glosario"
+  },
+  "content": [
+    {
+      "slug": "knowledge",
+      "label": "Conocimiento del área",
+      "area": "Transversal",
+      "title": "Misión y responsabilidades de Control de Calidad",
+      "body": "La sección verifica que los cambios satisfagan criterios acordados y aporta evidencia para decidir su liberación. El analista diseña y ejecuta casos; el editor mantiene guías; el evaluador administra conocimientos; el responsable de certificación consolida resultados. Desarrollo corrige defectos y operaciones coordina despliegues. Ejercicio ficticio: asignar responsables para el cambio DEMO-101 y acordar criterios de entrada, salida y trazabilidad."
+    },
+    {
+      "slug": "environment",
+      "label": "Ambiente de certificación",
+      "area": "Transversal",
+      "title": "Preparar un ambiente reproducible",
+      "body": "Registrar versión de aplicación, configuración, dependencias y datos sintéticos; separar desarrollo, certificación y producción. Inventario ficticio: MF-DEMO, APP-DEMO y BD-DEMO, sin direcciones ni credenciales reales. Antes de ejecutar: comprobar accesos por rol, disponibilidad, versión desplegada, conectividad autorizada y smoke test. Conservar evidencia y un plan de restauración; detener las pruebas si el ambiente cambia sin control."
+    },
+    {
+      "slug": "mainframe",
+      "label": "Mainframe",
+      "area": "Mainframe",
+      "title": "CICS, DATACOM y DCOMSRV",
+      "body": "CICS gestiona transacciones en línea; validar entradas, salidas, errores y consistencia de datos. DATACOM es una plataforma de base de datos: contrastar cambios esperados y ausencia de efectos colaterales con consultas autorizadas. DCOMSRV se usa aquí como etiqueta ficticia de un servicio adaptador, cuyo significado y contrato deben confirmarse en cada instalación; no se presupone una definición institucional. Caso: una transacción DEMO consulta un saldo sintético y comunica una respuesta; revisar contrato, timeout, códigos y conciliación."
+    },
+    {
+      "slug": "mainframe",
+      "label": "Mainframe",
+      "area": "Mainframe",
+      "title": "JCL, COBOL, ROSCOE/TSO y Batch",
+      "body": "JCL describe la ejecución de jobs y sus pasos. COBOL implementa reglas de negocio que pueden ejecutarse en línea o batch. ROSCOE y TSO son entornos distintos para interactuar con el mainframe; su disponibilidad depende de la instalación. Batch procesa lotes: revisar entradas, pasos, códigos de retorno según criterios del job, salidas y rechazos. Un RC=0 por sí solo no demuestra exactitud. Ejercicio: 1000 entradas = 980 salidas + 20 rechazos; validar totales monetarios, reinicio, duplicados e idempotencia con evidencia de cada paso."
+    },
+    {
+      "slug": "distributed",
+      "label": "Distribuido",
+      "area": "Distribuido",
+      "title": "Linux, Oracle, WebSphere, WAR y API",
+      "body": "Linux aloja procesos y archivos; verificar permisos mínimos, logs y recursos. Oracle almacena datos: comprobar integridad, transacciones y rollback. WebSphere puede alojar aplicaciones Java según su edición y configuración. WAR empaqueta una aplicación web; registrar versión y dependencias desplegadas. Las API definen contratos entre componentes: verificar esquemas, autenticación, autorización, estados HTTP, errores, timeout e idempotencia. Escenario ficticio: API de pedidos → aplicación WAR → Oracle; validar que un rechazo no cree un pedido parcial. CICC no instala ni requiere estos productos comerciales; son temas de estudio."
+    },
+    {
+      "slug": "lifecycle",
+      "label": "Ciclo de vida y pruebas",
+      "area": "Transversal",
+      "title": "Del requerimiento al mantenimiento",
+      "body": "Requerimientos y riesgos → diseño → construcción → pruebas → despliegue → operación y mantenimiento, con retroalimentación continua. Relacionar cada requerimiento con casos, resultados, defectos y evidencia. Niveles: unitario, integración, sistema y aceptación. Tipos: funcional, regresión, smoke, exploratorio, rendimiento, seguridad, accesibilidad y recuperación. Elegir según riesgo, no como lista obligatoria universal. Ejercicio: para un cambio de cálculo, probar límites, integración de datos y regresión; definir el resultado esperado antes de ejecutar."
+    },
+    {
+      "slug": "tools",
+      "label": "Herramientas QA / ClearQuest",
+      "area": "Transversal",
+      "title": "Trazabilidad de defectos y herramientas",
+      "body": "ClearQuest es una herramienta comercial mencionada como conocimiento; CICC no la integra ni exige licencia. Flujo ilustrativo configurable: registrado → analizado → asignado → corregido → listo para validar → cerrado; reabrir si persiste. Registrar resumen, versión, ambiente, pasos, datos sintéticos, esperado, observado, evidencia, severidad y prioridad. Severidad describe impacto; prioridad ordena atención. Alternativas abiertas para prácticas: Django Admin para registros, unittest para pruebas y herramientas abiertas de seguimiento. Ejercicio: documentar DEMO-INC-01 y enlazarlo con DEMO-101 y su caso de regresión."
+    },
+    {
+      "slug": "procedures",
+      "label": "Procedimientos de certificación",
+      "area": "Transversal",
+      "title": "Procedimiento de certificación de un cambio",
+      "body": "1. Recibir alcance, versión y criterios de aceptación.\n2. Validar criterios de entrada: ambiente estable, datos sintéticos y despliegue identificado.\n3. Diseñar plan, riesgos, casos y resultados esperados.\n4. Ejecutar smoke, funcionales y regresión según riesgo; guardar evidencias.\n5. Registrar defectos, verificar correcciones y repetir casos afectados.\n6. Revisar criterios de salida: cobertura acordada, evidencias completas y defectos pendientes aceptados por responsables.\n7. Emitir informe con recomendación, restricciones y decisión del responsable autorizado.\n8. Archivar versión y evidencias. La recomendación de QA no sustituye la autorización de despliegue. Ejemplo ficticio: DEMO-101, 12 casos, 11 conformes y 1 bloqueante; recomendación: no liberar hasta resolverlo."
+    },
+    {
+      "slug": "incidents",
+      "label": "Incidentes y soluciones",
+      "area": "Mainframe",
+      "title": "DEMO-INC-01: lote con registros duplicados",
+      "body": "Síntoma: 1000 entradas producen 1020 salidas tras un reinicio. Impacto ficticio: duplicación de resultados. Diagnóstico: comparar identificadores de entrada/salida, punto de reinicio y pasos del job. Hipótesis: el paso reejecutado no evita duplicados. Solución de ejemplo: corregir el control de reinicio con desarrollo y restaurar datos sintéticos desde una copia autorizada. Verificación: repetir fallo y reinicio; comprobar 980 salidas únicas + 20 rechazos y totales conciliados. Cierre: adjuntar evidencia y caso de regresión. No ejecutar cambios operativos desde esta guía."
+    },
+    {
+      "slug": "incidents",
+      "label": "Incidentes y soluciones",
+      "area": "Distribuido",
+      "title": "DEMO-INC-02: error de API tras desplegar WAR",
+      "body": "Síntoma: smoke devuelve error 500 en ambiente ficticio. Diagnóstico: correlacionar hora, identificador de petición, log de aplicación y versión del WAR; comprobar configuración de conexión sin copiar secretos. Hipótesis: configuración incompatible con el despliegue. Solución: el responsable corrige la configuración o revierte a una versión validada siguiendo el procedimiento local. Verificación: smoke, contrato de API, autorización y persistencia sin datos parciales. Registrar causa confirmada y evidencia antes de cerrar."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "CICS",
+      "body": "Gestor de transacciones en línea del entorno mainframe."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "DATACOM",
+      "body": "Plataforma de base de datos; validar estructura y resultados con permisos autorizados."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "DCOMSRV",
+      "body": "Etiqueta de servicio adaptador en este escenario ficticio; confirmar definición local."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "JCL",
+      "body": "Lenguaje de control de jobs y pasos."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "COBOL",
+      "body": "Lenguaje de programación habitual en sistemas de negocio."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "ROSCOE/TSO",
+      "body": "Entornos distintos de interacción con mainframe, sujetos a disponibilidad local."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "Batch",
+      "body": "Procesamiento por lotes con controles de entrada, salida y reinicio."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "Linux",
+      "body": "Sistema operativo usado en plataformas distribuidas."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "Oracle",
+      "body": "Plataforma de base de datos relacional."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "WebSphere",
+      "body": "Familia de productos para aplicaciones e integración."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "WAR",
+      "body": "Archivo de aplicación web Java."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "API",
+      "body": "Contrato de interacción entre componentes."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "ClearQuest",
+      "body": "Herramienta comercial de seguimiento de cambios y defectos; sin integración en CICC."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "Regresión",
+      "body": "Pruebas para detectar efectos adversos de cambios."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "Certificación",
+      "body": "Proceso de revisión y evidencia frente a criterios acordados."
+    },
+    {
+      "slug": "glossary",
+      "label": "Glosario",
+      "area": "Transversal",
+      "title": "Smoke",
+      "body": "Comprobación breve de funciones críticas para continuar las pruebas."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{% load cicc %}
+{% if show_filters %}
+<form class="filter-bar" method="get" role="search">
+  <label class="grow">Buscar
+    <input name="q" value="{{ query }}" placeholder="Título, contenido o área..."{% if section == 'search' %} autofocus{% endif %}>
+  </label>
+  <label>Ordenar por
+    <select name="orden">{% for value, label in sorts %}<option value="{{ value }}"{% if sort == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  </label>
+  {% if area %}<input type="hidden" name="area" value="{{ area }}">{% endif %}
+  {% if kind %}<input type="hidden" name="tipo" value="{{ kind }}">{% endif %}
+  {% if tag %}<input type="hidden" name="etiqueta" value="{{ tag }}">{% endif %}
+  <button class="btn-primary">Buscar {% icon 'arrow' %}</button>
+  <a href="?">Limpiar</a>
+</form>
+<div class="chips" role="group" aria-label="Filtrar por área"><span class="chip-label">Área:</span>
+  {% for chip in area_chips %}<a class="chip{% if chip.active %} active{% endif %}" href="{{ chip.url }}"{% if chip.active %} aria-current="true"{% endif %}>{{ chip.label }}</a>{% endfor %}
+</div>
+{% if kind_chips %}
+<div class="chips" role="group" aria-label="Filtrar por tipo"><span class="chip-label">Tipo:</span>
+  {% for chip in kind_chips %}<a class="chip{% if chip.active %} active{% endif %}" href="{{ chip.url }}"{% if chip.active %} aria-current="true"{% endif %}>{{ chip.label }}</a>{% endfor %}
+</div>
+{% endif %}
+{% endif %}
+
+{% if tag %}
+<div class="chips"><span class="chip-label">Etiqueta:</span><a class="chip active" href="{{ tag_clear_url }}" aria-label="Quitar la etiqueta {{ tag }}">{{ tag }} ✕</a></div>
+{% endif %}
+
+{% if section == 'search' and query %}
+<div class="search-groups" aria-label="Resumen de resultados">
+  <span class="pill blue">Recursos: {{ resources.paginator.count }}</span>
+  <span class="pill green">Lecciones: {{ search_lessons|length }}</span>
+  <span class="pill teal">Rutas: {{ search_paths|length }}</span>
+  <span class="pill purple">Evaluaciones: {{ search_assessments|length }}</span>
+</div>
+{% endif %}
+
+{% if resources.paginator.count %}
+<div class="section-heading">
+  <h2>{{ resources.paginator.count }} recurso{{ resources.paginator.count|pluralize }}{% if section == 'library' %} para seguir creciendo{% endif %}</h2>
+  <span>Curado por el equipo QA</span>
+</div>
+{% endif %}
+
+<div class="cards">
+  {% for r in resources %}
+  <article class="resource-card">
+    <div class="resource-art {% cycle 'art-green' 'art-blue' 'art-purple' %}">
+      <span>{% if r.kind == 'Video' %}{% icon 'play' %}{% elif r.kind == 'Enlace' %}{% icon 'link' %}{% else %}{% icon 'file' %}{% endif %}</span>
+      <small>{{ r.display_kind|upper }}</small>
+    </div>
+    <div class="card-body">
+      <span class="pill green">{{ r.area }}</span>
+      <h2><a class="stretched" href="/resource/{{ r.pk }}/">{{ r.display_title|highlight:query }}</a></h2>
+      <p>{{ r.description|truncatechars:125|highlight:query }}</p>
+      {% if r.tag_list %}<p class="tag-line">{% for t in r.tag_list %}<span class="tag">#{{ t }}</span>{% endfor %}</p>{% endif %}
+      <div class="card-bottom"><small>{{ r.version_count }} versión{{ r.version_count|pluralize:'es' }}</small><span>Explorar recurso {% icon 'arrow' %}</span></div>
+    </div>
+    <form class="fav-form" method="post" action="/favorite/{{ r.pk }}/">{% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      {% if r.pk in favorite_ids %}
+      <button class="fav-btn on" aria-pressed="true" aria-label="Quitar «{{ r.title }}» de favoritos" title="Quitar de favoritos">{% icon 'star' %}</button>
+      {% else %}
+      <button class="fav-btn" aria-pressed="false" aria-label="Guardar «{{ r.title }}» en favoritos" title="Guardar en favoritos">{% icon 'star' %}</button>
+      {% endif %}
+    </form>
+  </article>
+  {% empty %}
+  <div class="empty">
+    {% icon 'search' %}
+    {% if section == 'favorites' %}
+    <h3>Aún no tienes favoritos</h3>
+    <p>Marca con la estrella los recursos que quieras tener a mano y aparecerán aquí.</p>
+    <a class="btn-primary" href="/p/library/">Explorar la biblioteca {% icon 'arrow' %}</a>
+    {% elif section == 'search' and not query %}
+    <h3>Escribe qué quieres encontrar</h3>
+    <p>Busca por título, contenido o área. También se buscan lecciones, rutas y evaluaciones.</p>
+    {% else %}
+    <h3>No hay recursos con estos filtros</h3>
+    <p>Prueba con otra búsqueda o quita algún filtro.</p>
+    <a class="btn-secondary" href="?">Limpiar filtros</a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% include 'sections/_pagination.html' with page_obj=resources %}
+
+{% if section == 'search' and query %}
+<section class="panel" style="margin-top:28px">
+  <h2>Rutas y academia</h2>
+  {% for p in search_paths %}<p><a href="/p/paths/">{{ p.title|highlight:query }}</a></p>{% endfor %}
+  {% for l in search_lessons %}<p><a href="/p/lessons/#lesson-{{ l.pk }}">{{ l.title|highlight:query }}</a> · {{ l.path.title }}</p>{% empty %}<p>Sin lecciones coincidentes.</p>{% endfor %}
+  <h2>Evaluaciones</h2>
+  {% for a in search_assessments %}<p><a href="/p/assessments/">{{ a.title|highlight:query }}</a></p>{% empty %}<p>Sin evaluaciones coincidentes.</p>{% endfor %}
+</section>
+{% endif %}

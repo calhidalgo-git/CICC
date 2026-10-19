@@ -1,6 +1,6 @@
 # Componentes gratuitos
 
-Python: PSF License. Django: BSD-3-Clause. PostgreSQL: PostgreSQL License. psycopg: LGPL-3.0. Bootstrap 5.3.3: MIT. Chart.js 4.4.7: MIT. openpyxl: MIT.
+Python: PSF License. Django: BSD-3-Clause. PostgreSQL: PostgreSQL License. psycopg: LGPL-3.0. Bootstrap 5.3.3: MIT. Chart.js 4.4.7: MIT. openpyxl: MIT. WhiteNoise: MIT. Ruff (solo desarrollo): MIT.
 
 Bootstrap y Chart.js se guardan en static/vendor; no se solicitan recursos a un CDN al navegar. Los encabezados de distribución conservan sus avisos. Dependencias Python se instalan desde PyPI. No se incluyen fuentes comerciales, imágenes externas ni servicios de pago.
 

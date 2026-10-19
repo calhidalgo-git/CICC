@@ -4,3 +4,5 @@ __pycache__/
 *.sqlite3
 private_storage/
 .env
+
+demo-credentials.txt

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load cicc %}
+{% block content %}
+<a href="{% url course.url_prefix %}" class="eyebrow">← VOLVER A {{ course.name|upper }}</a>
+<div class="page-heading">
+  <div>
+    <h1>{{ week_title }}</h1>
+    <p>{{ course.name }} · Semana {{ week }} de {{ total_weeks }}</p>
+  </div>
+</div>
+<div class="progress-track" role="progressbar" aria-label="Posición en el curso" aria-valuemin="1" aria-valuemax="{{ total_weeks }}" aria-valuenow="{{ week }}" style="margin-bottom:18px"><i style="width:{% widthratio week total_weeks 100 %}%"></i></div>
+<article class="panel qa-week-content">{% if db_week %}{{ db_week.body|safe }}{% else %}{% include week_template %}{% endif %}</article>
+
+<form method="post" action="{% url 'toggle_week' course_key week %}" class="week-complete">{% csrf_token %}
+  {% if week_done %}<span class="pill green">{% icon 'check' %} Semana completada</span> <button class="btn-secondary">Desmarcar</button>
+  {% else %}<button class="btn-primary">Marcar semana como completada {% icon 'check' %}</button>{% endif %}
+</form>
+
+<nav class="week-nav" aria-label="Navegación entre semanas">
+  {% if prev_week %}<a href="{% url course.week_url prev_week %}" rel="prev">{% icon 'arrow-left' %} Semana {{ prev_week }}</a>{% else %}<span></span>{% endif %}
+  {% if next_week %}<a href="{% url course.week_url next_week %}" rel="next">Semana {{ next_week }} {% icon 'arrow' %}</a>{% endif %}
+</nav>
+
+<div class="section-heading"><h2>Explorar los temas</h2></div>
+{% for title in weeks %}
+{% if forloop.counter != week %}
+<a class="resource-row" href="{% url course.week_url forloop.counter %}">{% icon 'file' 'file-icon' %}<div><h3>Semana {{ forloop.counter }} · {{ title }}</h3></div>{% if forloop.counter in weeks_done %}<span class="pill green">{% icon 'check' %} Completada</span>{% endif %}{% icon 'arrow' %}</a>
+{% endif %}
+{% endfor %}
+{% endblock %}

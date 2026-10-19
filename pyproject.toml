@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["hub/migrations", "staticfiles", "private_storage"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# Las líneas largas restantes son SVG y textos del catálogo; el formateador ya envuelve el resto.
+ignore = ["E501"]

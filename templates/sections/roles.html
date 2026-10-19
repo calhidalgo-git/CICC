@@ -1,0 +1,12 @@
+{% load cicc %}
+<div class="section-heading"><h2>Acceso según responsabilidad</h2><a href="/admin/auth/group/">Administrar permisos {% icon 'link' %}</a></div>
+<div class="cards">
+  {% for role in roles %}
+  <article class="panel">
+    <span class="course-icon blue">{% icon 'roles' %}</span>
+    <h2>{{ role.name }}</h2>
+    <p>{{ role.permissions.count }} permisos explícitos</p>
+    <details><summary>Ver permisos</summary>{% for p in role.permissions.all %}<p class="permission">{{ p.content_type.app_label }}.{{ p.codename }}</p>{% endfor %}</details>
+  </article>
+  {% endfor %}
+</div>

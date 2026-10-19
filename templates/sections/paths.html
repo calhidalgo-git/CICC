@@ -1,0 +1,21 @@
+{% load cicc %}
+<div class="cards">
+  {% for row in path_rows %}
+  <article class="panel">
+    <span class="course-icon blue">{% icon 'path' %}</span>
+    <span class="pill">{{ row.path.area }}</span>
+    <h2>{{ row.path.title }}</h2>
+    <p>{{ row.path.description }}</p>
+    <div class="progress-track" role="progressbar" aria-label="Progreso de {{ row.path.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ row.pct }}"><i style="width:{{ row.pct }}%"></i></div>
+    <div class="progress-meta"><span>{{ row.done }} de {{ row.total }} lecciones</span><span>{{ row.pct }}%</span></div>
+    <ol>{% for l in row.lessons %}<li>{{ l.title }}</li>{% endfor %}</ol>
+    {% if row.next %}
+    <a href="/p/lessons/#lesson-{{ row.next.pk }}" class="btn-primary">{% if row.done %}Continuar ruta{% else %}Abrir ruta{% endif %} {% icon 'arrow' %}</a>
+    {% else %}
+    <span class="pill green">{% icon 'check' %} Ruta completada</span>
+    {% endif %}
+  </article>
+  {% empty %}
+  <div class="empty">{% icon 'path' %}<h3>Todavía no hay rutas</h3><p>Cuando el equipo publique rutas de aprendizaje aparecerán aquí.</p></div>
+  {% endfor %}
+</div>
