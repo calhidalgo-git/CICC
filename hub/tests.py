@@ -41,6 +41,16 @@ from .models import (
 from .navigation import NAV
 from .services import draw_questions, is_correct
 
+
+def valid_template(client):
+    """Plantilla de importación con el ID real de la primera evaluación (los IDs no siempre empiezan en 1)."""
+    wb = load_workbook(BytesIO(client.get('/template/').content))
+    wb.active['A2'] = Assessment.objects.order_by('pk').first().pk
+    out = BytesIO()
+    wb.save(out)
+    return out.getvalue()
+
+
 PASSWORD = 'DemoQA!2026'
 
 
@@ -349,10 +359,9 @@ class Tools(BaseCase):
 
     def test_excel_and_backup(self):
         self.login('lucia')
-        template = self.client.get('/template/')
-        self.assertEqual(template.status_code, 200)
+        self.assertEqual(self.client.get('/template/').status_code, 200)
         before = Question.objects.count()
-        self.assertEqual(self.upload(template.content).status_code, 200)
+        self.assertEqual(self.upload(valid_template(self.client)).status_code, 200)
         self.assertEqual(Question.objects.count(), before + 1)
         self.assertEqual(self.client.get('/report.xlsx').status_code, 200)
         self.assertEqual(self.client.post('/backup/').status_code, 200)
@@ -385,7 +394,7 @@ class Tools(BaseCase):
 
     def test_import_ignores_blank_trailing_rows(self):
         self.login('lucia')
-        wb = load_workbook(BytesIO(self.client.get('/template/').content))
+        wb = load_workbook(BytesIO(valid_template(self.client)))
         wb.active.append([None] * 7)
         out = BytesIO()
         wb.save(out)
@@ -603,7 +612,7 @@ class Topics(BaseCase):
 
     def test_excel_topic_column_is_optional_and_saved(self):
         self.login('lucia')
-        template = self.client.get('/template/').content
+        template = valid_template(self.client)
         self.client.post('/import/', {'file': SimpleUploadedFile('q.xlsx', template)})
         self.assertEqual(Question.objects.filter(topic='Pruebas smoke').count(), 1)
         wb = load_workbook(BytesIO(template))
