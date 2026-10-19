@@ -25,3 +25,6 @@ USE_TZ=True
 SESSION_COOKIE_HTTPONLY=True
 SESSION_COOKIE_SAMESITE='Lax'
 X_FRAME_OPTIONS='DENY'
+_DB=Path('/tmp/demo.sqlite3')
+if os.environ.get('VERCEL') and not _DB.exists(): import shutil; shutil.copy(BASE_DIR/'demo.sqlite3',_DB)
+if os.environ.get('VERCEL'): DATABASES={'default':{'ENGINE':'django.db.backends.sqlite3','NAME':_DB}}; SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'; MEDIA_ROOT=Path('/tmp/private_storage')
