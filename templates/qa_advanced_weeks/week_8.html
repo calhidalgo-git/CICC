@@ -1,0 +1,50 @@
+<h2>1. Validación en múltiples dispositivos y sistemas operativos</h2>
+<p>Las aplicaciones móviles deben funcionar correctamente en una gran diversidad de entornos, lo que convierte la validación en múltiples dispositivos y sistemas operativos en un aspecto crítico del QA.</p>
+<ul>
+<li>Diversidad de dispositivos: smartphones, tablets y dispositivos híbridos, cada uno con diferentes resoluciones, tamaños de pantalla y capacidades de hardware.
+</li>
+<li>Sistemas operativos: Android e iOS son los principales, pero cada uno tiene múltiples versiones y particularidades que afectan el comportamiento de las aplicaciones.
+</li>
+<li>Retos principales:
+<ul>
+<li>Fragmentación en Android (múltiples fabricantes y versiones).
+</li>
+<li>Restricciones de seguridad y políticas de Apple en iOS.
+</li>
+<li>Diferencias en rendimiento según el hardware (procesadores, memoria, batería).
+</li>
+</ul></li>
+<li>Objetivo: garantizar que la aplicación sea estable, rápida y funcional en cualquier combinación de dispositivo y sistema operativo.
+</li>
+<li>Ejemplo práctico: validar que una aplicación bancaria funcione correctamente en un Samsung Galaxy con Android 12 y en un iPhone con iOS 16, manteniendo la misma experiencia de usuario.
+</li></ul>
+<h2>2. Herramientas: Appium, Espresso</h2>
+<p>Para enfrentar la complejidad de las pruebas móviles, se utilizan frameworks especializados:</p>
+<ul>
+<li>Appium:
+<ul>
+<li>Framework de código abierto para automatización de pruebas en aplicaciones móviles.
+</li>
+<li>Compatible con Android e iOS, soporta aplicaciones nativas, híbridas y web móviles.
+</li>
+<li>Se basa en el protocolo WebDriver, lo que permite escribir pruebas en múltiples lenguajes (Java, Python, C#, JavaScript).
+</li>
+<li>Ventaja: flexibilidad y soporte multiplataforma.
+</li>
+<li>Ejemplo: automatizar el flujo de login en una aplicación móvil tanto en Android como en iOS con el mismo script.
+</li>
+</ul></li>
+<li>Espresso:
+<ul>
+<li>Framework oficial de Google para pruebas en aplicaciones Android.
+</li>
+<li>Permite escribir pruebas rápidas y confiables directamente en Java/Kotlin.
+</li>
+<li>Se integra con Android Studio y ofrece sincronización automática con la interfaz de usuario.
+</li>
+<li>Ventaja: alta velocidad y estabilidad en pruebas de UI para Android.
+</li>
+<li>Ejemplo: validar que un botón de “Comprar” aparece y funciona correctamente en diferentes versiones de Android.
+</li></ul>
+</li></ul>
+<p>La combinación de Appium y Espresso permite cubrir tanto la validación multiplataforma como la optimización específica en Android, logrando un enfoque integral en pruebas móviles.</p>

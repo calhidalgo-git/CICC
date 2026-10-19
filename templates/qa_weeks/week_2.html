@@ -1,0 +1,38 @@
+<h2>Las pruebas manuales son la base del QA</h2>
+<p>El testing manual es el primer paso en el aseguramiento de calidad.</p>
+<ul>
+<li>Se trata de ejecutar pruebas directamente por una persona, sin usar herramientas automáticas.
+</li>
+<li>Permite comprender cómo funciona el sistema desde la perspectiva del usuario.
+</li>
+<li>Es fundamental porque antes de automatizar, se debe entender qué probar y por qué.
+</li>
+<li>Ejemplo: probar manualmente el formulario de registro de una web para verificar que los campos obligatorios funcionen correctamente.
+</li></ul>
+<h2>Técnicas: clases de equivalencia, valores límite, pruebas exploratorias</h2>
+<p>Las pruebas manuales se apoyan en técnicas que ayudan a diseñar casos de prueba más efectivos:</p>
+<ul>
+<li>Clases de equivalencia: agrupan entradas similares para reducir la cantidad de pruebas.
+<ul>
+<li>Ejemplo: si un campo acepta números del 1 al 100, basta con probar un valor válido (50) y uno inválido (150).
+</li></ul></li>
+<li>Valores límite: se prueban los extremos de los rangos de datos, donde suelen aparecer errores.
+<ul>
+<li>Ejemplo: probar el 1 y el 100 en el campo anterior, además de valores fuera del rango (0 y 101).
+</li></ul></li>
+<li>Pruebas exploratorias: el tester navega libremente por la aplicación sin un guion fijo, buscando comportamientos inesperados.
+<ul>
+<li>Ejemplo: intentar cerrar sesión en medio de un proceso de compra para ver cómo responde el sistema.
+</li></ul>
+</li></ul>
+<h2>3. Reportar bugs requiere claridad: pasos ejecutados, resultado esperado y resultado obtenido</h2>
+<p>Un buen reporte de errores es esencial para que los desarrolladores puedan reproducir y corregir el fallo.</p>
+<ul>
+<li>Pasos ejecutados: describir exactamente qué hizo el tester (ejemplo: “Ingresé usuario y contraseña incorrectos en el login”).
+</li>
+<li>Resultado esperado: lo que debería ocurrir según los requisitos (ejemplo: “El sistema debería mostrar un mensaje de error indicando credenciales inválidas”).
+</li>
+<li>Resultado obtenido: lo que realmente ocurrió (ejemplo: “El sistema permitió el acceso sin validar las credenciales”).
+</li>
+<li>La claridad evita malentendidos y acelera la corrección de errores.
+</li></ul>

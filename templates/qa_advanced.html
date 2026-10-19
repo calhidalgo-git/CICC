@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="/p/dashboard/" class="eyebrow">← VOLVER A VISTA GENERAL</a>
+<div class="page-heading"><div><h1>QA Avanzado y Especialización</h1></div></div>
+<article class="panel">
+  <h2>Introducción</h2>
+  <p>El aseguramiento de la calidad de software (QA) ha evolucionado más allá de las pruebas funcionales básicas, convirtiéndose en un componente estratégico dentro del ciclo de vida del desarrollo. Tras dominar los fundamentos, el siguiente paso es profundizar en técnicas avanzadas y áreas de especialización que permitan enfrentar los retos actuales de la industria: aplicaciones distribuidas, arquitecturas basadas en microservicios, entornos móviles, seguridad digital y accesibilidad. Este curso de <strong>QA Avanzado y Especialización</strong> está diseñado para proporcionar al alumno una visión integral y práctica de las metodologías, herramientas y competencias necesarias para desempeñarse como un profesional altamente capacitado en calidad de software, capaz de liderar procesos y aportar valor estratégico en equipos multidisciplinarios.</p>
+  <h2>Objetivos Generales</h2>
+  <ol>
+    <li><strong>Dominar técnicas avanzadas de pruebas</strong> funcionales y no funcionales, incluyendo rendimiento, seguridad, usabilidad y compatibilidad.</li>
+    <li><strong>Aplicar frameworks modernos de automatización</strong> y comprender su integración en pipelines de CI/CD y entornos DevOps.</li>
+    <li><strong>Incorporar inteligencia artificial y datos masivos</strong> en el diseño y ejecución de pruebas para optimizar cobertura y predicción de fallos.</li>
+    <li><strong>Especializarse en áreas críticas del QA</strong> como pruebas móviles, APIs, microservicios y accesibilidad digital.</li>
+    <li><strong>Desarrollar competencias estratégicas y de liderazgo</strong>, fortaleciendo habilidades de comunicación, pensamiento crítico y colaboración.</li>
+    <li><strong>Fomentar una cultura de calidad organizacional</strong>, posicionando al QA como un rol clave en la innovación y sostenibilidad de proyectos tecnológicos.</li>
+  </ol>
+</article>
+<div class="section-heading"><h2>Ruta de aprendizaje</h2><span>11 semanas</span></div>
+{% for title in weeks %}
+<a class="learning-row" href="{% url 'qa_advanced_week' forloop.counter %}"><span class="course-icon green">▤</span><div><span class="tiny-label">QA AVANZADO Y ESPECIALIZACIÓN</span><h3>{{ title }}</h3><small>Abrir tema</small></div><span>→</span></a>
+{% endfor %}
+{% endblock %}

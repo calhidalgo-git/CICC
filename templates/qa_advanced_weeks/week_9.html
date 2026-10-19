@@ -1,0 +1,64 @@
+<h2>Validación de endpoints, autenticación y rendimiento de servicios</h2>
+<p>Las arquitecturas modernas basadas en APIs y microservicios requieren un enfoque especializado en QA:</p>
+<ul>
+<li>Validación de endpoints:
+<ul>
+<li>Consiste en verificar que cada endpoint expuesto por la API responda correctamente a las solicitudes.
+</li>
+<li>Se evalúan códigos de estado HTTP (200, 400, 500), estructura de la respuesta (JSON, XML) y cumplimiento de contratos definidos.
+</li>
+<li>Ejemplo: validar que el endpoint /api/users devuelva la lista completa de usuarios con el formato esperado.
+</li>
+</ul></li>
+<li>Autenticación y autorización:
+<ul>
+<li>QA debe comprobar que los mecanismos de seguridad (OAuth2, JWT, API Keys) funcionen correctamente.
+</li>
+<li>Se validan accesos permitidos y denegados según roles de usuario.
+</li>
+<li>Ejemplo: un usuario con rol admin puede acceder a /api/reports, mientras que un usuario estándar recibe un error 403 (Forbidden).
+</li>
+</ul></li>
+<li>Rendimiento de servicios:
+<ul>
+<li>Se mide el tiempo de respuesta de la API bajo diferentes cargas.
+</li>
+<li>Se evalúa la capacidad de los microservicios para escalar horizontalmente y mantener estabilidad.
+</li>
+<li>Ejemplo: simular 1,000 solicitudes concurrentes al endpoint /api/orders y verificar que el tiempo de respuesta se mantenga por debajo de 2 segundos.
+</li></ul>
+</li></ul>
+<p>La validación de endpoints, autenticación y rendimiento asegura que los servicios sean confiables, seguros y escalables.</p>
+<h2>Herramientas: Postman, Newman, Karate</h2>
+<p>Para ejecutar pruebas de APIs y microservicios, se utilizan herramientas especializadas:</p>
+<ul>
+<li>Postman:
+<ul>
+<li>Plataforma gráfica que permite enviar solicitudes HTTP y validar respuestas.
+</li>
+<li>Ideal para pruebas manuales y exploratorias de APIs REST.
+</li>
+<li>Permite organizar colecciones de pruebas y compartirlas entre equipos.
+</li>
+<li>Ejemplo: probar el endpoint /api/login con diferentes credenciales y validar la respuesta JSON.
+</li>
+</ul></li>
+<li>Newman:
+<ul>
+<li>CLI (Command Line Interface) de Postman que permite ejecutar colecciones de pruebas de manera automatizada.
+</li>
+<li>Se integra fácilmente en pipelines CI/CD, ejecutando pruebas de API en cada despliegue.
+</li>
+<li>Ejemplo: ejecutar automáticamente una colección de pruebas de Postman en Jenkins después de cada commit.
+</li>
+</ul></li>
+<li>Karate:
+<ul>
+<li>Framework de pruebas de API basado en Java, con sintaxis sencilla y soporte para pruebas de rendimiento.
+</li>
+<li>Permite escribir escenarios en formato BDD (Behavior Driven Development).
+</li>
+<li>Ejemplo: validar que el endpoint /api/products devuelva un listado con al menos 10 elementos y que el tiempo de respuesta sea menor a 1 segundo.
+</li></ul>
+</li></ul>
+<p>La combinación de Postman (pruebas manuales), Newman (automatización en pipelines) y Karate (escenarios BDD y rendimiento) ofrece un enfoque integral para asegurar la calidad en APIs y microservicios.</p>

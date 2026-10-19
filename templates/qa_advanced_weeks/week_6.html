@@ -1,0 +1,38 @@
+<h2>Validación de vulnerabilidades comunes</h2>
+<p>Las pruebas de seguridad buscan identificar debilidades en el software que puedan ser explotadas por atacantes. Entre las vulnerabilidades más frecuentes se encuentran:</p>
+<ul>
+<li>SQL Injection: ocurre cuando un atacante inserta código SQL en campos de entrada para manipular la base de datos. Ejemplo: introducir &#x27; OR &#x27;1&#x27;=&#x27;1 en un formulario de login para acceder sin credenciales válidas.
+</li>
+<li>XSS (Cross-Site Scripting): se da cuando un atacante inyecta scripts maliciosos en páginas web, afectando a otros usuarios. Ejemplo: un comentario en un foro que contiene &lt;script&gt;alert(&#x27;hack&#x27;);&lt;/script&gt;.
+</li>
+<li>CSRF (Cross-Site Request Forgery): engaña al usuario para ejecutar acciones no deseadas en una aplicación en la que ya está autenticado.
+</li>
+<li>Validación de entradas: el QA debe verificar que el sistema filtre y sanitice correctamente los datos ingresados por el usuario, evitando que se conviertan en vectores de ataque.
+</li></ul>
+<p>La validación de estas vulnerabilidades es esencial en aplicaciones críticas como banca, salud y comercio electrónico, donde un fallo puede comprometer datos sensibles.</p>
+<h2>Herramientas: OWASP ZAP, Burp Suite</h2>
+<p>Para detectar vulnerabilidades, el QA se apoya en herramientas especializadas:</p>
+<ul>
+<li>OWASP ZAP (Zed Attack Proxy):
+<ul>
+<li>Proyecto de código abierto respaldado por OWASP.
+</li>
+<li>Permite realizar análisis dinámicos de seguridad en aplicaciones web.
+</li>
+<li>Funcionalidades: escaneo automático de vulnerabilidades, interceptación de tráfico HTTP/HTTPS, pruebas de fuzzing.
+</li>
+<li>Ventaja: gratuito y ampliamente usado en entornos académicos y profesionales.
+</li>
+</ul></li>
+<li>Burp Suite:
+<ul>
+<li>Herramienta comercial muy utilizada en pruebas de penetración.
+</li>
+<li>Ofrece un conjunto completo de utilidades: proxy de interceptación, escáner de vulnerabilidades, repetidor de solicitudes y comparador de respuestas.
+</li>
+<li>Ventaja: interfaz intuitiva y capacidad de personalización mediante extensiones.
+</li>
+<li>Versión Community gratuita y versión Professional con funcionalidades avanzadas.
+</li></ul>
+</li></ul>
+<p>Ambas herramientas permiten al QA simular ataques reales y validar la robustez del sistema frente a amenazas externas.</p>

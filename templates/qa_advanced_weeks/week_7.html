@@ -1,0 +1,57 @@
+<h2>Conceptos de carga, estrés y escalabilidad</h2>
+<p>Las pruebas de rendimiento permiten evaluar cómo responde un sistema bajo diferentes condiciones de uso. Los tres conceptos clave son:</p>
+<ul>
+<li>Pruebas de carga:
+<ul>
+<li>Simulan un número creciente de usuarios concurrentes para medir el tiempo de respuesta y la estabilidad del sistema.
+</li>
+<li>Objetivo: verificar si la aplicación soporta la carga esperada en condiciones normales de operación.
+</li>
+<li>Ejemplo: simular 500 usuarios accediendo simultáneamente a un portal de e-commerce durante una campaña de descuentos.
+</li>
+</ul></li>
+<li>Pruebas de estrés:
+<ul>
+<li>Llevan el sistema más allá de su capacidad máxima para identificar puntos de falla.
+</li>
+<li>Objetivo: evaluar cómo se comporta la aplicación en situaciones extremas y si se recupera adecuadamente después de la sobrecarga.
+</li>
+<li>Ejemplo: incrementar usuarios hasta que el servidor colapse y analizar el tiempo de recuperación.
+</li>
+</ul></li>
+<li>Pruebas de escalabilidad:
+<ul>
+<li>Validan si el sistema puede crecer en recursos (hardware, instancias en la nube, balanceo de carga) sin perder rendimiento.
+</li>
+<li>Objetivo: comprobar que la arquitectura soporta expansión y que el sistema mantiene tiempos de respuesta aceptables al aumentar la capacidad.
+</li>
+<li>Ejemplo: añadir más nodos a un clúster y verificar que el sistema distribuye correctamente la carga.
+</li></ul>
+</li></ul>
+<p>Estos tres tipos de pruebas permiten asegurar que el software sea rápido, estable y capaz de crecer según las necesidades del negocio.</p>
+<h2>Herramientas: JMeter, Gatling</h2>
+<p>Para ejecutar pruebas de rendimiento, el QA se apoya en herramientas especializadas:</p>
+<ul>
+<li>Apache JMeter:
+<ul>
+<li>Herramienta de código abierto ampliamente utilizada.
+</li>
+<li>Permite simular múltiples usuarios concurrentes enviando peticiones HTTP, JDBC, SOAP, REST, entre otras.
+</li>
+<li>Ventaja: interfaz gráfica intuitiva y soporte para pruebas distribuidas.
+</li>
+<li>Ejemplo: crear un plan de prueba que simule 1,000 usuarios realizando compras en un sitio web.
+</li>
+</ul></li>
+<li>Gatling:
+<ul>
+<li>Framework moderno basado en Scala, orientado a pruebas de rendimiento de aplicaciones web.
+</li>
+<li>Destaca por su eficiencia en el consumo de recursos y su capacidad para generar reportes detallados en tiempo real.
+</li>
+<li>Ventaja: scripts fáciles de mantener y ejecución rápida, ideal para integrarse en pipelines CI/CD.
+</li>
+<li>Ejemplo: validar el tiempo de respuesta de una API bajo 10,000 solicitudes concurrentes.
+</li></ul>
+</li></ul>
+<p>Ambas herramientas permiten al QA medir la capacidad del sistema y detectar cuellos de botella antes de que afecten a los usuarios finales.</p>

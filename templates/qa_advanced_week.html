@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="{% url 'qa_advanced' %}" class="eyebrow">← VOLVER A QA AVANZADO Y ESPECIALIZACIÓN</a>
+<div class="page-heading"><div><h1>{{ week_title }}</h1><p>QA Avanzado y Especialización · Semana {{ week }} de 11</p></div></div>
+<article class="panel">{% include week_template %}</article>
+<div class="section-heading"><h2>Explorar los temas</h2></div>
+{% for title in weeks %}
+{% if forloop.counter != week %}<a class="resource-row" href="{% url 'qa_advanced_week' forloop.counter %}"><span class="file-icon">▤</span><div><h3>{{ title }}</h3></div><span>→</span></a>{% endif %}
+{% endfor %}
+{% endblock %}

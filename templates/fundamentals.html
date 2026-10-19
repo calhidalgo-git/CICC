@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="/p/dashboard/" class="eyebrow">← VOLVER A VISTA GENERAL</a>
+<div class="page-heading"><div><h1>Fundamentos QA</h1><p>Una ruta progresiva para iniciarte en el aseguramiento de la calidad.</p></div></div>
+<article class="panel">
+  <h2>Introducción</h2>
+  <p>El aseguramiento de la calidad de software (QA) es una disciplina que busca garantizar que los productos digitales cumplan con estándares de calidad, funcionalidad y confiabilidad. A diferencia del testing, que se centra en encontrar errores, el QA se ocupa de <strong>prevenirlos</strong> mediante procesos, metodologías y buenas prácticas. Este roadmap ofrece una ruta de aprendizaje progresiva, con teoría clara y actividades prácticas paso a paso, para que cualquier persona pueda iniciarse en QA.</p>
+  <h2>Objetivos generales</h2>
+  <ul>
+    <li>Comprender los fundamentos del QA y su relación con QC y Testing.</li>
+    <li>Aplicar técnicas de pruebas manuales y automatizadas.</li>
+    <li>Conocer herramientas de gestión de calidad y pruebas.</li>
+    <li>Integrar QA en metodologías ágiles y tradicionales.</li>
+    <li>Consolidar conocimientos en un proyecto final aplicado.</li>
+  </ul>
+</article>
+<div class="section-heading"><h2>Ruta de aprendizaje</h2><span>6 semanas</span></div>
+{% for title in weeks %}
+<a class="learning-row" href="{% url 'qa_week' forloop.counter %}"><span class="course-icon blue">▤</span><div><span class="tiny-label">FUNDAMENTOS QA</span><h3>{{ title }}</h3><small>Abrir tema</small></div><span>→</span></a>
+{% endfor %}
+{% endblock %}
