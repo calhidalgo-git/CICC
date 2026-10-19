@@ -53,7 +53,17 @@ jobs:
           cache-dependency-path: requirements-dev.txt
       - run: pip install -r requirements-dev.txt
       - name: Pruebas (PostgreSQL)
-        run: python manage.py test hub -v 2
+        # Si falla, deja las líneas clave como anotaciones visibles en la ejecución (útil al depurar sin abrir los registros).
+        run: |
+          python manage.py test hub -v 2 2>&1 | tee test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -E '^(ERROR|FAIL):|Error|Exception|violates|does not exist|relation ' test.log | tail -n 15 | while IFS= read -r line; do
+              line=${line//'%'/'%25'}
+              echo "::error::${line:0:400}"
+            done
+          fi
+          exit "$status"
         env:
           PGHOST: localhost
           PGPORT: '5432'

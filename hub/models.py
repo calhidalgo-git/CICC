@@ -166,7 +166,9 @@ class AssessmentQuerySet(models.QuerySet):
         """Evaluaciones sin grupos asignados, las de los grupos del usuario, o todas para quien las administra."""
         if user.has_perm('hub.change_assessment'):
             return self
-        return self.filter(Q(groups__isnull=True) | Q(groups__in=user.groups.all())).distinct()
+        # Subconsulta: un join con los grupos duplicaría filas y falsearía los conteos que se anotan después.
+        visible = Assessment.objects.filter(Q(groups__isnull=True) | Q(groups__in=user.groups.all())).values('pk')
+        return self.filter(pk__in=visible)
 
 
 class Assessment(models.Model):

@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group, User
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
+from django.core.management.color import no_style
 from django.core.serializers.base import DeserializationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import DatabaseError, connection, transaction
@@ -292,6 +293,11 @@ def restore(request):
                 restored += 1
             # Con claves foráneas diferidas, un respaldo incoherente solo fallaría al confirmar: se comprueba aquí para revertir.
             connection.check_constraints()
+            # PostgreSQL no avanza las secuencias al insertar IDs explícitos: sin esto el siguiente alta chocaría.
+            models = {type(item.object) for item in objects if item.object._meta.label_lower in RESTORABLE}
+            with connection.cursor() as cursor:
+                for statement in connection.ops.sequence_reset_sql(no_style(), models):
+                    cursor.execute(statement)
     except (DatabaseError, ValueError, ObjectDoesNotExist):
         logger.exception('Error al restaurar el respaldo')
         messages.error(request, 'No se pudo restaurar el respaldo (datos inconsistentes). No se cambió nada.')
