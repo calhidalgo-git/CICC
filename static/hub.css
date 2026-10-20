@@ -548,3 +548,11 @@ fieldset.check legend{float:none;width:auto;font-size:15px;font-weight:600;paddi
 html[data-theme=dark] .tag{background:#1c2840;border-color:#2c3a56;color:#c4cfe0}
 html[data-theme=dark] fieldset.check{border-color:#2c3a56}
 html[data-theme=dark] fieldset.check legend{color:#e3e8f1}
+
+/* ===== Corrección del acceso ===== */
+/* «.login-form button{width:100%}» también alcanzaba al botón Mostrar y tapaba el campo de contraseña. */
+.login-form .pw-toggle{width:auto;right:8px;top:50%;transform:translateY(-50%);padding:7px 12px;line-height:1.2}
+.login-form .pw-wrap input{padding-right:96px}
+.brand div{letter-spacing:0;line-height:1.3}
+html[data-theme=dark] .login-form .eyebrow,html[data-theme=dark] .eyebrow{color:#a9bad4}
+html[data-theme=dark] .login-form label{color:#dbe3f0}
