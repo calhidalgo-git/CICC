@@ -1,6 +1,9 @@
 import importlib.util
 import os
+import secrets
 import shutil
+import tempfile
+import warnings
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -17,9 +20,20 @@ def env_flag(name, default):
 DEBUG = env_flag('DEBUG', '0' if ON_VERCEL else '1')
 
 _DEV_SECRET = 'local-prototype-only-change-before-deployment'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', _DEV_SECRET)
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or _DEV_SECRET  # una variable vacía cuenta como no definida
+# True cuando no se configuró una clave real y se usa una temporal (solo permitido en Vercel).
+SECRET_KEY_EPHEMERAL = False
 if not DEBUG and SECRET_KEY == _DEV_SECRET:
-    raise ImproperlyConfigured('Define DJANGO_SECRET_KEY con un valor aleatorio cuando DEBUG=0.')
+    if not ON_VERCEL:
+        raise ImproperlyConfigured('Define DJANGO_SECRET_KEY con un valor aleatorio cuando DEBUG=0.')
+    # En Vercel se permite arrancar sin clave para que la demo se pueda construir: la clave es aleatoria por proceso.
+    # Las sesiones y los enlaces de recuperación dejan de valer al reiniciarse la instancia, y con varias instancias el
+    # acceso puede fallar de forma intermitente. Define DJANGO_SECRET_KEY en Vercel para un despliegue estable.
+    SECRET_KEY = secrets.token_urlsafe(64)
+    SECRET_KEY_EPHEMERAL = True
+    warnings.warn(
+        'DJANGO_SECRET_KEY no está definida: se usa una clave temporal (solo para demostración).', stacklevel=1
+    )
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', '.vercel.app']
 ALLOWED_HOSTS += [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()]
@@ -141,9 +155,10 @@ if not DEBUG:
 # Vercel: el sistema de archivos es de solo lectura salvo /tmp, así que la base demo se copia allí en cada arranque en frío.
 # Los cambios hechos en la demo publicada NO persisten entre despliegues ni entre instancias.
 if ON_VERCEL:
-    _DB = Path('/tmp/demo.sqlite3')
+    _TMP = Path(tempfile.gettempdir())  # /tmp en Vercel; es la única carpeta escribible
+    _DB = _TMP / 'demo.sqlite3'
     if not _DB.exists():
         shutil.copy(BASE_DIR / 'demo.sqlite3', _DB)
     DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': _DB}}
     SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-    MEDIA_ROOT = Path('/tmp/private_storage')
+    MEDIA_ROOT = _TMP / 'private_storage'

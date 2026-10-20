@@ -368,7 +368,12 @@ def roles(request, section):
 
 
 def settings_page(request, section):
-    return 'settings', {'db_vendor': connection.vendor, 'time_zone': settings.TIME_ZONE, 'debug': settings.DEBUG}
+    return 'settings', {
+        'db_vendor': connection.vendor,
+        'time_zone': settings.TIME_ZONE,
+        'debug': settings.DEBUG,
+        'ephemeral_key': settings.SECRET_KEY_EPHEMERAL,
+    }
 
 
 def audit(request, section):

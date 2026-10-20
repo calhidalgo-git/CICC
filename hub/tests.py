@@ -513,8 +513,32 @@ class Settings(TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), 'False')
 
-    def test_vercel_is_not_debug_by_default(self):
-        self.assertNotEqual(self.run_settings(VERCEL='1').returncode, 0)
+    def test_vercel_is_not_debug_by_default_and_falls_back_to_a_temporary_key(self):
+        result = self.run_settings(VERCEL='1', DJANGO_SECRET_KEY='')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), 'False')
+        self.assertIn('clave temporal', result.stderr)
+
+    def test_the_temporary_key_is_different_in_every_process(self):
+        script = 'import django; django.setup(); from django.conf import settings; print(settings.SECRET_KEY, settings.SECRET_KEY_EPHEMERAL)'
+        keys = []
+        for _ in range(2):
+            env = {k: v for k, v in os.environ.items() if k not in ('DEBUG', 'DJANGO_SECRET_KEY')}
+            env.update({'DJANGO_SETTINGS_MODULE': 'config.settings', 'QA_SQLITE': '1', 'VERCEL': '1'})
+            out = subprocess.run(
+                [sys.executable, '-c', script], cwd=settings.BASE_DIR, env=env, capture_output=True, text=True
+            )
+            self.assertEqual(out.returncode, 0, out.stderr)
+            key, flag = out.stdout.split()
+            self.assertEqual(flag, 'True')
+            self.assertNotEqual(key, 'local-prototype-only-change-before-deployment')
+            keys.append(key)
+        self.assertNotEqual(*keys)
+
+    def test_a_real_key_on_vercel_is_used_as_is(self):
+        result = self.run_settings(VERCEL='1', DJANGO_SECRET_KEY='x' * 50)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn('clave temporal', result.stderr)
 
 
 class DemoAccounts(BaseCase):

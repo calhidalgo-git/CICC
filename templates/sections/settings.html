@@ -1,6 +1,7 @@
 {% load cicc %}
 <div class="panel">
   <h2>Configuración de la plataforma</h2>
+  {% if ephemeral_key %}<p class="flash flash-warning" role="alert">Se usa una clave secreta temporal: las sesiones se pierden al reiniciar la instancia. Define la variable DJANGO_SECRET_KEY en el servidor.</p>{% endif %}
   <dl>
     <dt>Almacenamiento</dt><dd>Local protegido · Descargas autenticadas</dd>
     <dt>Base de datos</dt><dd>{% if db_vendor == 'sqlite' %}SQLite (solo demostración){% else %}{{ db_vendor|capfirst }}{% endif %} · PostgreSQL por defecto</dd>
