@@ -556,3 +556,6 @@ html[data-theme=dark] fieldset.check legend{color:#e3e8f1}
 .brand div{letter-spacing:0;line-height:1.3}
 html[data-theme=dark] .login-form .eyebrow,html[data-theme=dark] .eyebrow{color:#a9bad4}
 html[data-theme=dark] .login-form label{color:#dbe3f0}
+/* El margen del campo vive en el contenedor: así top:50% centra «Mostrar» sobre el campo y no sobre campo + margen. */
+.login-form .pw-wrap{margin-bottom:23px}
+.login-form .pw-wrap input{margin-bottom:0}
