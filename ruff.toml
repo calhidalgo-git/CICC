@@ -1,12 +1,13 @@
-[tool.ruff]
+﻿# Configuración de ruff. Va en ruff.toml (y no en pyproject.toml) para que Vercel no detecte un proyecto Python
+# con pyproject.toml e intente instalar dependencias desde ahí en lugar de requirements.txt.
 line-length = 120
 target-version = "py312"
 extend-exclude = ["hub/migrations", "staticfiles", "private_storage"]
 
-[tool.ruff.format]
+[format]
 quote-style = "single"
 
-[tool.ruff.lint]
+[lint]
 select = ["E", "F", "W", "I", "B", "UP"]
 # Las líneas largas restantes son SVG y textos del catálogo; el formateador ya envuelve el resto.
 ignore = ["E501"]
